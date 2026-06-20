@@ -45,6 +45,13 @@
             display: none;
         }
 
+        body {
+            background-color: #0d0d0d !important;
+            color: #ececec;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
         .loading {
             all: initial;
             position: fixed;
@@ -59,54 +66,235 @@
             border-bottom-color: rgba(0, 0, 0, 0.2);
             border-radius: 100%;
             overflow: hidden;
-
             animation: circle infinite 1s linear;
+            z-index: 9999;
         }
 
         @keyframes circle {
-            0% {
-                transform: rotate(0);
-            }
+            0% { transform: rotate(0); }
+            100% { transform: rotate(360deg); }
+        }
 
-            100% {
-                transform: rotate(360deg);
-            }
+        [v-cloak] {
+            display: none;
+        }
+
+        .v-theme--dark {
+            --v-theme-surface: 0, 0, 0;
+            --v-theme-background: 13, 13, 13;
+        }
+
+        .v-application {
+            background: #0d0d0d !important;
+        }
+
+        .v-navigation-drawer {
+            background: #000000 !important;
+            border-right: 1px solid #2d2d2d !important;
+        }
+
+        .v-list-item--active {
+            background-color: #202020 !important;
+            color: white !important;
+        }
+
+        .v-main {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chat-bot {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 24px !important;
+            max-width: 800px !important;
+            margin: 0 auto !important;
+            width: 100%;
+        }
+
+        .welcome-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            color: #8e8e8e;
+            margin-bottom: 24px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            justify-content: center;
+            z-index: 100;
+            padding: 0 16px 32px 16px;
+        }
+
+        .input-container {
+            width: 100%;
+            max-width: 768px;
+            background-color: #1a1a1a;
+            border-radius: 26px;
+            border: 1px solid #444;
+            transition: border-color 0.2s;
+            padding: 8px 12px;
+        }
+
+        .input-container:focus-within {
+            border-color: #444;
+        }
+
+        .custom-textarea textarea {
+            color: #ececec !important;
+            font-size: 1rem;
+            line-height: 1.5;
+            padding-top: 10px !important;
+            padding-bottom: 10px !important;
+            min-height: 24px !important;
+        }
+
+        .chat-message {
+            margin-bottom: 24px;
+            border-bottom: none !important;
+        }
+
+        .v-card {
+            border-radius: 12px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            display: block;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #444;
+        }
+
+        #lottie {
+            width: 200px;
+            height: 200px;
+            margin-bottom: 20px;
+        }
+        .chat-images {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            margin: 4px;
+        }
+
+        /* Markdown and Response Backgrounds */
+        .md-editor-preview-wrapper, .md-editor-dark, .md-editor-preview {
+            background-color: transparent !important;
+            --md-bk-color: transparent !important;
+            color: white !important;
+            overflow-wrap: break-word !important;
+            word-wrap: break-word !important;
+            word-break: normal !important;
+        }
+
+        .md-editor {
+            background-color: transparent !important;
+        }
+
+        .md-editor-preview table tr:nth-child(2n),
+        .md-editor-preview table tr,
+        .md-editor-preview table td,
+        .md-editor-preview table th {
+            background-color: transparent !important;
+            word-break: normal !important;
+        }
+
+        .conversation-area-plain {
+            color: #ececec;
+            font-size: 1rem;
+            line-height: 1.5;
+            padding: 16px;
+            white-space: pre-wrap;
+            font-family: 'Inter', sans-serif;
+            background: #1e1e1e;
+            border-radius: 8px;
+            overflow-wrap: break-word !important;
+            word-wrap: break-word !important;
+            word-break: normal !important;
+        }
+
+        .conversation-area textarea {
+            overflow-wrap: break-word !important;
+            word-wrap: break-word !important;
+            word-break: normal !important;
+        }
+
+        .md-preview {
+            overflow-wrap: break-word !important;
+            word-wrap: break-word !important;
+            word-break: normal !important;
+        }
+
+        /* Sidebar Hover Actions */
+        .history-item .delete-btn {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .history-item:hover .delete-btn {
+            opacity: 1;
         }
     </style>
     <div id="loading" class="loading"></div>
 
     <!-- MDI -->
-    <!-- https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/MaterialDesign-Webfont/7.4.47/css/materialdesignicons.min.css -->
-    <link href="https://cdn.jsdelivr.org/npm/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet" rel="preload">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet" rel="preload">
 
     <!-- Keep the order, vue should be the first -->
-    <script src="https://cdn.jsdelivr.org/npm/vue@3.5.21/dist/vue.global.prod.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.5.21/dist/vue.global.prod.min.js"></script>
 
     <!-- Vuetify -->
-    <script src="https://cdn.jsdelivr.org/npm/vuetify/dist/vuetify.js"></script>
-    <link href="https://cdn.jsdelivr.org/npm/vuetify/dist/vuetify.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.css" rel="stylesheet">
 
     <!-- Vue i18n -->
-    <script src="https://cdn.jsdelivr.org/npm/vue-i18n/dist/vue-i18n.global.prod.min.js"></script>
-    <script src="https://cdn.jsdelivr.org/npm/iconify-icon/dist/iconify-icon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-i18n/dist/vue-i18n.global.prod.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/iconify-icon/dist/iconify-icon.min.js"></script>
 
     <!-- Pinia -->
-    <script src="https://cdn.jsdelivr.org/npm/vue-demi/lib/index.iife.min.js"></script>
-    <script src="https://cdn.jsdelivr.org/npm/pinia/dist/pinia.iife.prod.js"></script>
-    <script src="https://cdn.jsdelivr.org/npm/pinia-plugin-persist/dist/pinia-persist.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-demi/lib/index.iife.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pinia/dist/pinia.iife.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pinia-plugin-persist/dist/pinia-persist.umd.min.js"></script>
 
     <!-- MD -->
-    <link href="https://cdn.jsdelivr.org/npm/md-editor-v3/lib/style.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.org/npm/md-editor-v3/lib/umd/index.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/md-editor-v3/lib/style.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/md-editor-v3/lib/umd/index.js"></script>
 
     <!-- Lottie -->
-    <script src="https://cdn.jsdelivr.org/npm/lottie-web/build/player/lottie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lottie-web/build/player/lottie.min.js"></script>
     <!-- Docx mammoth -->
-    <script src="https://cdn.jsdelivr.org/npm/mammoth/mammoth.browser.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mammoth/mammoth.browser.js"></script>
 
     <!-- Vue Draggable -->
-    <script src="https://cdn.jsdelivr.org/npm/sortablejs/Sortable.min.js"></script>
-    <script src="https://cdn.jsdelivr.org/npm/vue3-draggable-next/dist/vuedraggable.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue3-draggable-next/dist/vuedraggable.umd.min.js"></script>
 
     <script>
         window.onload = function () {
@@ -115,320 +303,105 @@
             document.getElementById('loading').style.display = 'none';
         };
     </script>
-
-    <style scoped lang="scss">
-        [v-cloak] {
-            display: none;
-        }
-
-        .chat-bot {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        .fill-area {
-            height: 20px
-        }
-
-        .dialog-card {
-            width: 960px;
-            max-width: 100vw;
-            max-height: calc(70vh + 3rem);
-        }
-
-        #lottie {
-            display: none;
-            height: calc(99vh - 50px);
-            max-height: calc(100% - 100px);
-        }
-
-        .left-icon {
-            margin-bottom: 0.8rem;
-        }
-
-        .input-area {
-            background-color: white;
-            display: flex;
-            padding-inline: 21.5px;
-            margin-inline: 21.5px;
-            width: 100%;
-            position: fixed;
-            left: 50%;
-            transform: translate(-50%);
-            bottom: 0;
-
-            .input-panel {
-                flex: 1;
-                border-top: 5px solid white;
-                max-width: 1280px;
-                border-radius: 5px;
-                margin: 0 auto;
-            }
-
-            .input-box textarea {
-                margin-bottom: 1px;
-            }
-
-            .input-box textarea::-webkit-scrollbar {
-                display: none;
-
-            }
-
-            .input-icon {
-                margin: 0 10px 34px 10px;
-                /* top left bot right*/
-            }
-        }
-
-        .chat-images {
-            width: 25px;
-            max-height: 40px;
-            transition: all 0.2s;
-            /* margin-bottom: 20px; */
-
-            &:hover {
-                transition: all 0.2s;
-                opacity: 0.5;
-                filter: grayscale(100%);
-                cursor: not-allowed;
-            }
-        }
-
-        .shadow {
-            box-shadow: 1px 1px 7px #1867C0;
-        }
-
-        .hidden {
-            overflow: hidden;
-        }
-
-        .chat-message {
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .message {
-            margin: 0 auto;
-            display: flex;
-        }
-
-        .conversation-area {
-            margin: 6px 4px 4px 4px;
-            /* top left bot right*/
-        }
-
-        .fade-enter-active,
-        .fade-leave-active {
-            transition: all 0.5s ease;
-        }
-
-        .fade-enter-from,
-        .fade-leave-to {
-            opacity: 0;
-            transform: translateX(35px);
-        }
-
-        .toolbox-button {
-            position: fixed;
-            background-color: #1867C0;
-            bottom: 194px;
-            right: -46px;
-            z-index: 999;
-            padding: 0.5rem 1rem;
-            border-top-left-radius: 0.5rem;
-            border-bottom-left-radius: 0.5rem;
-            box-shadow: 1px 1px 9px #1867C0;
-            transition: all 0.5s;
-            cursor: pointer;
-
-            &:hover {
-                box-shadow: 1px 1px 18px #1867C0;
-                right: 0px;
-                transition: all 0.5s;
-            }
-
-        }
-
-        .history-images {
-            &:hover {
-                cursor: zoom-in;
-            }
-        }
-
-        .md-preview {
-            width: 100vw;
-            max-width: 100%;
-        }
-
-        .md-editor-preview p {
-            word-break: break-word;
-        }
-
-        .toolbox {
-            z-index: 99;
-            position: fixed;
-            bottom: 194px;
-            right: 5px;
-        }
-
-        .rotation {
-            font-size: 1.5rem;
-            animation: rotation 2s linear infinite;
-        }
-
-        .ghost {
-            opacity: 0.5;
-            background: #E3F2FD;
-        }
-
-        .list-draggable {
-            height: calc(100% - 38px);
-            /* background-color: lightblue; */
-        }
-
-        .bgc {
-            background-color: lightblue;
-        }
-
-        @keyframes rotation {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        ::-webkit-scrollbar {
-            display: block;
-            block-size: 5px;
-            inline-size: 5px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background-color: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: lightgrey;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background-color: grey;
-        }
-    </style>
 </head>
 
 <body>
     <div id="app" v-cloak>
-        <v-app>
-            <v-container v-show="messageStore.conversation.length === 0">
-                <div id="lottie" class="text-center text-h5">
-                    <a href="https://github.com/AI-QL/chat-ui" style="color: #1867C0"
-                        class="font-weight-bold text-decoration-none" target="_blank">
-                        <v-icon class="mb-2">mdi-github</v-icon>
-                        {{$t('$vuetify.dataIterator.title')}}</a>
-                </div>
-            </v-container>
-            <v-container v-show="messageStore.conversation.length > 0" class="chat-bot">
-                <tuui-chat-box :messages="messageStore.conversation" :size="settingStore.avatarSize"
-                    :language="languageStore.getLocale"></tuui-chat-box>
-                <div class="fill-area"></div>
-            </v-container>
-            <div class="input-area">
-                <v-sheet elevation="0" class="input-panel d-flex align-end px-1">
-                    <v-speed-dial transition="expand-transition" offset="10">
-                        <template v-slot:activator="{ props: activatorProps }">
-                            <v-btn v-bind="activatorProps" size="small" icon="mdi-cog" absolute
-                                class="input-icon"></v-btn>
+        <v-app theme="dark">
+            <v-navigation-drawer v-model="drawer" border="right" width="260" :temporary="$vuetify.display.mobile">
+                <v-list-item class="pa-4">
+                    <v-list-item-title class="text-h6 font-weight-bold">{{"Local AI" }}</v-list-item-title>
+                    <template v-slot:append>
+                        <v-btn icon="mdi-chevron-left" variant="text" size="small" @click="drawer = false" v-if="!$vuetify.display.mobile"></v-btn>
+                    </template>
+                </v-list-item>
+
+                <v-list density="compact" nav class="px-2">
+                    <v-list-item prepend-icon="mdi-plus" :title="$t('$vuetify.dataIterator.g.new')" value="new"
+                        @click="messageStore.init()" class="mb-1"></v-list-item>
+
+                    <v-list-item v-if="Object.keys(mcpStore.getServers || {}).length > 0" prepend-icon="mdi-database" :title="$t('$vuetify.dataIterator.r.title')" value="mcp"
+                        @click="resourceStore.resourceDialog = true" class="mb-1"></v-list-item>
+                </v-list>
+
+                <v-divider class="my-2"></v-divider>
+
+                <v-list-subheader class="text-uppercase text-caption font-weight-bold px-4">Recent conversations
+                </v-list-subheader>
+
+                <v-text-field v-model="searchQuery" prepend-inner-icon="mdi-magnify" placeholder="Search chats..."
+                        density="compact" variant="solo-filled" flat hide-details class="mx-2 mb-2"></v-text-field>
+
+                <v-list density="compact" nav class="px-2">
+                    <v-list-item v-for="(item, index) in filteredConversations" :key="item.id"
+                        @click="historyStore.select(index)" class="mb-1 history-item">
+                        <v-list-item-title class="text-truncate">
+                            {{ item.history[0]?.content[1]?.text || item.history[0]?.content || "New Chat" }}
+                        </v-list-item-title>
+                        <template v-slot:append>
+                            <v-btn icon="mdi-delete-outline" variant="text" size="x-small" color="error" class="delete-btn"
+                                @click.stop="confirmDelete(index)"></v-btn>
                         </template>
-                        <v-btn key="4" variant="elevated" @click="settingStore.initDialog" icon="mdi-api"
-                            v-tooltip:end="$t('$vuetify.dataIterator.i.title')">
-                        </v-btn>
-                        <v-badge key="3" color="transparent" location='top left'>
-                            <template v-slot:badge>
-                                <iconify-icon :icon="languageStore.getIcon2()"></iconify-icon>
+                    </v-list-item>
+                </v-list>
+
+                <template v-slot:append>
+                    <v-divider></v-divider>
+                    <v-list density="compact" nav class="px-2">
+                        <v-list-item prepend-icon="mdi-cog" :title="$t('$vuetify.dataIterator.i.title')" value="settings"
+                            @click="settingStore.initDialog()" class="mb-1"></v-list-item>
+                    </v-list>
+                </template>
+            </v-navigation-drawer>
+
+            <v-main>
+                <v-btn v-if="!drawer" icon="mdi-menu" variant="text" size="small" class="ma-2 position-absolute" style="z-index: 10" @click="drawer = true"></v-btn>
+
+                <v-container v-if="messageStore.conversation.length === 0" class="welcome-container">
+                    <div id="lottie" class="mb-4"></div>
+                    <h1 class="welcome-title">Hello there</h1>
+                    <p class="welcome-subtitle">Type a message or upload files to get started</p>
+                </v-container>
+
+                <v-container v-else class="chat-bot">
+                    <tuui-chat-box :messages="messageStore.conversation" :size="settingStore.avatarSize"
+                        :language="languageStore.getLocale"></tuui-chat-box>
+                </v-container>
+
+                <div class="input-wrapper">
+                    <div class="input-container d-flex align-center">
+                        <v-btn icon="mdi-plus" variant="text" size="small" @click="triggerFileInput"></v-btn>
+                        <v-textarea v-model="messageStore.userMessage" placeholder="Type a message..." variant="plain"
+                            density="compact" hide-details auto-grow rows="1" max-rows="10" class="custom-textarea flex-grow-1"
+                            @keydown="messageStore.handleKeydown">
+                            <template v-slot:prepend-inner>
+                                <v-img v-if="messageStore.base64" class="chat-images" :src="messageStore.base64"
+                                    @click="messageStore.images=[]"></v-img>
                             </template>
-                            <v-menu transition="fade-transition">
-                                <template v-slot:activator="{ props }">
-                                    <v-btn variant="elevated" v-bind="props" icon="mdi-translate"
-                                        v-tooltip:end="$t('$vuetify.dataIterator.l.title')">
-                                    </v-btn>
-                                </template>
-                                <v-list class='mb-2'>
-                                    <v-list-item v-for="n in languageStore.list" :key="n.value"
-                                        @click="languageStore.change(n.value)" density="compact">
-                                        <template v-slot:prepend>
-                                            <iconify-icon class='mr-3'
-                                                :icon="languageStore.getIcon(n.name)"></iconify-icon>
-                                        </template>
-                                        <v-list-item-title v-text="n.title"></v-list-item-title>
-                                    </v-list-item>
-                                </v-list>
-                            </v-menu>
-                        </v-badge>
-                        <v-btn @click="settingStore.agentDialog = true" variant="elevated" icon="mdi-account-supervisor"
-                            v-tooltip:end="$t('$vuetify.dataIterator.a.title')">
-                        </v-btn>
-                        <v-btn v-if="mcpStore.getServers" @click="resourceStore.resourceDialog = true"
-                            variant="elevated" icon="mdi-database" v-tooltip:end="$t('$vuetify.dataIterator.r.title')">
-                        </v-btn>
-                        <v-badge key="1" :content="historyStore.conversation.length" color="info" max="99"
-                            location='top left'>
-                            <v-btn variant="elevated" icon="mdi-list-box" @click="settingStore.configHistory = true"
-                                v-tooltip:end="$t('$vuetify.dataIterator.q.title')">
-                            </v-btn>
-                        </v-badge>
-                    </v-speed-dial>
-                    <v-container>
-                        <v-row>
-                            <v-textarea class="input-box" dirty color="primary" type="text" variant="solo" counter
-                                clearable @keydown="messageStore.handleKeydown" v-model="messageStore.userMessage"
-                                :label="" @focus="settingStore.setInputRow(2,0)" @blur="settingStore.setInputRow(1,150)"
-                                :rows="settingStore.inputRow" auto-grow max-rows="15">
-                                <template v-slot:prepend-inner>
-                                    <v-container>
-                                        <v-row>
-                                            <v-img v-if="messageStore.base64" class="chat-images mt-1"
-                                                :src="messageStore.base64" @click="messageStore.images=[]"></v-img>
-                                            <v-file-input v-else @click.stop accept="image/*" hide-input
-                                                v-model="messageStore.images"
-                                                prepend-icon="mdi-plus-circle-outline"></v-file-input>
-                                        </v-row>
-                                    </v-container>
-                                </template>
-                            </v-textarea>
-                        </v-row>
-                    </v-container>
-                    <div class="input-icon">
-                        <v-btn v-if="messageStore.userMessage" size="small" color="primary" variant="elevated"
-                            @click="messageStore.sendMessage" icon="mdi-arrow-up">
-                        </v-btn>
-                        <v-btn v-else-if="messageStore.generating" size="small" color="primary" variant="elevated"
-                            @click="messageStore.stop" icon="mdi-stop"></v-btn>
-                        <v-speed-dial v-else-if="messageStore.conversation.length > 0" location="bottom center"
-                            transition="expand-transition">
-                            <template v-slot:activator="{ props: activatorProps }">
-                                <v-btn v-bind="activatorProps" size="small" icon="mdi-dots-horizontal"
-                                    color="primary"></v-btn>
-                            </template>
-                            <v-btn key="2" size="small" color="primary" variant="elevated"
-                                @click="messageStore.resendMessage" icon="mdi-autorenew"
-                                v-tooltip:start="$t('$vuetify.dataIterator.g.reg')">
-                            </v-btn>
-                            <v-btn key="1" color="primary" variant="elevated" @click="messageStore.init()"
-                                icon="mdi-pencil-plus" v-tooltip:start="$t('$vuetify.dataIterator.g.new')">
-                            </v-btn>
-                        </v-speed-dial>
-                        <v-btn v-else size="small" :color="mcpStore.getServers ? 'primary': 'grey'" variant="elevated"
-                            @click="mcpStore.getServers ? promptStore.promptDialog = true : false"
-                            icon="mdi-account-edit">
-                        </v-btn>
+                        </v-textarea>
+
+                        <input type="file" ref="fileInput" style="display: none" accept="image/*" @change="onFileChange">
+
+                        <v-btn v-if="messageStore.userMessage" icon="mdi-arrow-up" color="white" theme="light"
+                            variant="flat" size="x-small" class="ml-2" @click="messageStore.sendMessage"></v-btn>
+                        <v-btn v-else-if="messageStore.generating" icon="mdi-stop" color="error" variant="flat"
+                            size="x-small" class="ml-2" @click="messageStore.stop"></v-btn>
                     </div>
-                </v-sheet>
-            </div>
+                </div>
+            </v-main>
+
+            <!-- delete confirmation dialog -->
+            <v-dialog v-model="deleteDialog" max-width="400px">
+                <v-card>
+                    <v-card-title class="text-h5">Delete conversation?</v-card-title>
+                    <v-card-text>This action cannot be undone.</v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="grey" variant="text" @click="deleteDialog = false">Cancel</v-btn>
+                        <v-btn color="error" variant="text" @click="doDelete">Delete</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
 
             <!-- snackbar -->
             <v-snackbar v-model="snackbarStore.isShow" timeout="4000" :color="snackbarStore.type" location="top">
@@ -528,6 +501,7 @@
                                                 {{chatbotStore.conversation_id}}
                                             </v-chip>
                                         </span>
+                                    </v-row>
                                 </v-expansion-panel-title>
 
                                 <v-expansion-panel-text>
@@ -601,6 +575,7 @@
                                                 {{ chatbotStore.contentType }}
                                             </v-chip>
                                         </span>
+                                    </v-row>
                                 </v-expansion-panel-title>
 
                                 <v-expansion-panel-text>
@@ -715,9 +690,8 @@
                             <br>
                             <v-textarea class="mx-2" v-for="argument in promptStore.promptSelect.arguments"
                                 color="primary" type="text" variant="outlined" v-model="argument.content"
-                                :label="argument.name" rows="1" auto-grow>
+                                :label="argument.name" rows="1" auto-grow></v-textarea>
                         </div>
-                        </v-textarea>
                         <v-card-actions>
                             <v-spacer></v-spacer>
                             <v-btn class="pt-0" variant="flat" color="primary"
@@ -879,27 +853,6 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
-
-            <div v-if="settingStore.toolboxShow !== true" class="toolbox-button"
-                @click="settingStore.toolboxShow = true">
-                <v-icon class="rotation text-white">mdi-tools</v-icon>
-            </div>
-            <v-card v-else elevation="10" class="d-flex flex-column toolbox">
-                <!-- ---------------------------------------------- -->
-                <!-- Reset -->
-                <!-- ---------------------------------------------- -->
-                <v-btn @click="resetALL()" variant="text" size="45">
-                    <v-icon size="25" color="error">mdi-store-remove</v-icon>
-                    <v-tooltip activator="parent" location="left" text="Reset All Config"></v-tooltip>
-                </v-btn>
-                <!-- ---------------------------------------------- -->
-                <!-- Close Btn -->
-                <!-- ---------------------------------------------- -->
-                <v-btn @click="settingStore.toolboxShow = false" variant="text" size="45" color="error">
-                    <v-icon size="25">mdi-close</v-icon>
-                    <v-tooltip activator="parent" location="left" text="Close Toolbox"></v-tooltip>
-                </v-btn>
-            </v-card>
         </v-app>
     </div>
 
@@ -910,8 +863,7 @@
                     <div class="message">
                         <v-avatar :size=size class="mt-3 mr-3 mr-lg-6" color="primary" icon="mdi-account-circle">
                         </v-avatar>
-                        <tuui-chat-card class="gradient text-pre-wrap" :index="group.index" :messages="messages"
-                            :show-modify="true">
+                        <tuui-chat-card class="gradient text-pre-wrap" :index="group.index" :messages="messages" :current-message="group.message">
                             <template v-slot:default="{ showmodify }">
                                 <v-card-text v-if="Array.isArray(group.message.content)" class="md-preview">
                                     <div v-for="(item, index) in group.message.content" :key="index">
@@ -937,16 +889,15 @@
                     <div class="message">
                         <v-avatar :size=size class="mt-3 mr-3 mr-lg-6" color="teal" icon="mdi-lightning-bolt-circle">
                         </v-avatar>
-                        <tuui-chat-card :index="group.index" :messages="messages" :show-content="true">
+                        <tuui-chat-card :index="group.index" :messages="messages" :show-content="true" :current-message="group.message">
                             <template v-slot:default="{ showcontent }">
                                 <v-card-text v-if="group.message.reasoning_content" class="md-preview pt-1">
                                     <v-textarea class="conversation-area text-disabled font-italic" variant="plain"
                                         density='compact' auto-grow hide-details rows="1" readonly
                                         v-model="group.message.reasoning_content"></v-textarea>
                                 </v-card-text>
-                                <v-card-text v-if="showcontent" class="md-preview pt-1">
-                                    <v-textarea class="conversation-area" variant="plain" density='compact' auto-grow
-                                        hide-details rows="1" readonly v-model="group.message.content"></v-textarea>
+                                <v-card-text v-if="showcontent" class="pa-4">
+                                    <div class="conversation-area-plain">{{ group.message.content }}</div>
                                 </v-card-text>
                                 <v-card-text v-else class="md-preview px-4 py-3">
                                     <md-preview :model-value="group.message.content"
@@ -1036,21 +987,19 @@
 
     <template id="tuui-chat-card-template">
         <v-hover open-delay="100">
-            <template v-slot:default="{ isHovering, props }">
-                <v-card v-bind="props" :elevation="isHovering ? 4 : 2" width="100vw" max-width="100%">
+            <template v-slot:default="{ isHovering, props: hoverProps }">
+                <v-card v-bind="hoverProps" :elevation="isHovering ? 4 : 2" width="100vw" max-width="100%">
                     <slot :showcontent="showcontent" :showmodify="showmodify"></slot>
                     <v-expand-transition>
                         <div v-if="isHovering">
                             <v-divider></v-divider>
                             <v-card-actions>
                                 <v-btn v-if="showCopy" color="primary" icon="mdi-content-copy" size="x-small"
-                                    variant="plain" @click="copyToClipboard(messages[index])"></v-btn>
-                                <v-btn v-if="showModify" color="primary"
-                                    :icon=" showmodify ? 'mdi-check-bold' : 'mdi-lead-pencil'" size="x-small"
-                                    variant="plain" @click="showmodify = !showmodify" v-bind="showmodify"></v-btn>
+                                    variant="plain" @click="handleCopyToClipboard(currentMessage || messages[index])"></v-btn>
+
                                 <v-btn v-if="showContent" color="primary"
-                                    :icon=" showcontent ? 'mdi-eye-remove' : 'mdi-eye'" size="x-small" variant="plain"
-                                    @click="showcontent = !showcontent" v-bind="showcontent"></v-btn>
+                                    :icon=" showcontent ? 'mdi-eye-off' : 'mdi-eye'" size="x-small" variant="plain"
+                                    @click="showcontent = !showcontent"></v-btn>
                                 <v-spacer></v-spacer>
                                 <v-btn v-if="showReduce && index > 0" color="error" icon="mdi-format-align-top"
                                     size="x-small" variant="plain" @click="messages.splice(0, index)"></v-btn>
@@ -1064,1418 +1013,18 @@
         </v-hover>
     </template>
 
-    <script lang="ts" setup>
+    <script>
+        window.onload = function () {
+            const lottie = document.getElementById('lottie');
+            if (lottie) lottie.style.display = 'block';
+            document.getElementById('loading').style.display = 'none';
+        };
+
         const { createApp, ref, reactive, computed, onMounted, watch, nextTick, axios, defineProps, defineComponent } = Vue
         const { createVuetify } = Vuetify
         const { createPinia, defineStore, storeToRefs } = Pinia
         const { createI18n, useI18n } = VueI18n
         const { en, it, ja, sv, zhHans } = 'vuetify/locale'
-
-        const useMcpStore = defineStore("mcpStore", {
-            state: () => ({
-                serverTools: [],
-                loading: true,
-            }),
-
-            getters: {
-                getServers: () => {
-                    console.log('MCP:', window.mcpServers)
-                    return window.mcpServers
-                },
-            },
-
-            actions: {
-                listServerResources: function () {
-                    const mcpServers = this.getServers
-                    const mcpKeys = Object.keys(mcpServers)
-                    const mcpResources = []
-                    for (const key of mcpKeys) {
-                        const resources = mcpServers[key]?.resources
-                        if (resources) {
-                            mcpResources.push({
-                                name: key,
-                                list: resources.list,
-                                templatesList: resources['templates/list']
-                            })
-                        }
-                    }
-                    return mcpResources
-                },
-                loadTools: function () {
-                    this.loading = true
-                    try {
-                        this.listTools().then((tools) => {
-                            this.serverTools = tools.map(tool => {
-                                return {
-                                    name: tool.function.name,
-                                    description: tool.function.description
-                                }
-                            }
-                            )
-                            return
-                        })
-                    } catch (error) {
-                        console.error('Failed to load tools:', error);
-                    } finally {
-                        this.loading = false;
-                    }
-
-                },
-                listTools: async function () {
-                    const mcpServers = this.getServers
-                    if (!mcpServers) {
-                        return null
-                    }
-                    const mcpKeys = Object.keys(mcpServers)
-                    const mcpTools = []
-                    for (const key of mcpKeys) {
-                        const toolsListFunction = mcpServers[key]?.tools?.list;
-                        if (typeof toolsListFunction === 'function') {
-                            const tools = await toolsListFunction();
-                            // console.log(await mcpServers[key]?.prompts?.list())
-                            // console.log(await mcpServers[key]?.resources['templates/list']())
-                            // console.log(await mcpServers[key]?.resources?.list())
-                            if (tools && Array.isArray(tools.tools)) {
-                                for (const tool of tools.tools) {
-                                    mcpTools.push({
-                                        type: 'function',
-                                        function: {
-                                            name: tool.name,
-                                            description: tool.description,
-                                            parameters: tool.inputSchema,
-                                            // strict: true
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    }
-                    return mcpTools
-                },
-                getTool: async function (tool_name) {
-                    const mcpServers = this.getServers;
-                    const mcpKeys = Object.keys(mcpServers);
-                    const result = await Promise.any(mcpKeys.map(async (key) => {
-                        const toolsListFunction = mcpServers[key]?.tools?.list;
-                        if (typeof toolsListFunction === 'function') {
-                            const tools = await toolsListFunction();
-                            if (tools && Array.isArray(tools.tools)) {
-                                const foundTool = tools.tools.find(tool => tool.name === tool_name);
-                                if (foundTool) {
-                                    return {
-                                        server: key,
-                                        tool: foundTool
-                                    };
-                                }
-                            }
-                        }
-                        throw new Error(`Tool ${tool_name} not found on server ${key}`);
-                    }));
-
-                    return result;
-                },
-                callTool: async function (tool_name, tool_args) {
-                    const tool = await this.getTool(tool_name)
-                    if (!tool) {
-                        return this.packReturn(`Tool name '${tool_name}' not found`)
-                    }
-
-                    let tool_arguments
-
-                    try {
-                        tool_arguments = JSON.parse(tool_args)
-                    } catch (e) {
-                        return this.packReturn(`Arguments JSON parse error: '${e}'`)
-                    }
-
-                    const params = {
-                        name: tool_name,
-                        arguments: tool_arguments
-                    }
-
-                    const result = await this.getServers[tool.server].tools.call(params)
-                    return result
-                },
-                convertItem: function (item) {
-                    if (item.type === "text") {
-                        return item;
-                    } else if (item.type === "image") {
-                        const imageUrl = `data:${item.mimeType};base64,${item.data}`;
-                        return {
-                            type: 'image_url',
-                            image_url: { url: imageUrl }
-                        };
-                    }
-                },
-                packReturn: (string) => {
-                    return {
-                        content: [{
-                            type: 'text',
-                            text: string
-                        }]
-                    }
-                }
-            },
-        });
-
-        const useAgentStore = defineStore("agentStore", {
-            state: () => ({
-                card: null,
-                columns: [],
-                editDialog: false,
-            }),
-
-            persist: {
-                enabled: true,
-                strategies: [{ storage: sessionStorage }],
-            },
-
-            getters: {
-                getDragOption: () => {
-                    return {
-                        animation: 200,
-                        group: "task",
-                        disabled: false,
-                        ghostClass: "ghost",
-                    };
-                },
-
-            },
-
-            actions: {
-                addCard(column) {
-                    const { addTitle, key } = column;
-                    if (!addTitle) return;
-                    let newCard = {
-                        id: "_" + Math.random().toString(36).substring(2, 11),
-                        state: key,
-                        title: addTitle,
-                        description: "",
-                        refFile: null,
-                        refText: "",
-                        order: -1,
-                    };
-                    column.cards.unshift(newCard);
-                    column.addTitle = "";
-                    column.isAddVisible = false;
-                },
-                deleteCard(column, index) {
-                    column.cards.splice(index, 1);
-                },
-                editCard(card) {
-                    this.card = { ...card }
-                    this.editDialog = true;
-                },
-                saveCard() {
-                    const editCard = this.card
-                    if (editCard) {
-                        let foundCard = this.columns
-                            .flatMap(column => column.cards)
-                            .find(card => card.id === this.card.id);
-                        if (foundCard) {
-                            foundCard.title = editCard.title;
-                            foundCard.refText = editCard.refText
-                            foundCard.refFile = editCard.refFile
-                            foundCard.description = editCard.description;
-                            this.editDialog = false;
-                        }
-                    }
-
-                },
-                promptMessage(conversation) {
-
-                    const result = this.columns[0].cards
-                        .filter(
-                            (item) => {
-                                return item.description !== "" || item.refText !== "";
-                            }
-                        )
-                        .map(item => (
-                            item.refText ? `${item.description}\n###\n${item.refText}\n###` : item.description
-                        ))
-                        .join('\n\n');
-
-                    if (result) {
-                        return [{ content: result, role: "system" }, ...conversation]
-                    } else {
-                        return [...conversation]
-                    }
-                    return [...conversation]
-
-                },
-                initAgent() {
-                    this.$reset();
-                    const states = ref(["PROMPT", "BACKUP"]);
-                    const changeState = (e, colIndex) => {
-                        console.log(e)
-                        if (e.added || e.moved) {
-                            const column = this.columns[colIndex];
-                            const state = column.key;
-                            for (let i = 0; i < column.cards.length; i++) {
-                                column.cards[i].order = i;
-                                column.cards[i].state = state;
-                            }
-                        }
-                    };
-
-                    states.value.forEach((state, index) => {
-                        this.columns.push({
-                            key: state,
-                            cards: [],
-                            isAddVisible: false,
-                            callback: (e) => changeState(e, index),
-                        });
-                    });
-
-                    this.parseCards([
-                        {
-                            id: 1,
-                            title: "Prompt 1",
-                            description: "",
-                            state: "PROMPT",
-                        },
-                        // {
-                        //     id: 2,
-                        //     title: "Agent 1",
-                        //     description: "TODO",
-                        //     state: "BACKUP",
-                        // },
-
-                    ])
-
-                },
-
-                parseCards(cards) {
-                    if (!cards) return this.columns.map((column) => (column.cards = []));
-
-                    this.columns.forEach((column) => {
-                        column.cards = cards
-                            .filter((card) => card.state === column.key)
-                            .sort((a, b) => (a.order < b.order ? -1 : 0));
-                    });
-                },
-
-            },
-
-        });
-
-        const useSettingStore = defineStore("settingStore", {
-            state: () => ({
-                inputRow: 1,
-                avatarSize: 24,
-                configDialog: false,
-                configHistory: false,
-
-                agentDialog: false,
-
-                apiKeyShow: false,
-
-                toolboxShow: false,
-                fontStatus: false,
-            }),
-            actions: {
-                initDialog() {
-                    this.apiKeyShow = false; // hide api key
-                    this.configDialog = true;
-                },
-                setInputRow(int, timeout) {
-                    setTimeout(() => {
-                        this.inputRow = int
-                    }, timeout);
-                }
-
-            },
-        });
-
-        const useResourceStore = defineStore("resourceStore", {
-            state: () => ({
-                resourceDialog: false,
-                tab: null,
-
-                resourceList: [],
-                resourceTemplatesList: [],
-
-                loadingTemplates: false,
-                loadingResources: false,
-            }),
-            actions: {
-                loadTemplates: function (resource_function) {
-                    this.loadingTemplates = true
-                    try {
-                        resource_function().then((result) => {
-                            console.log(result)
-                            this.resourceTemplatesList = result.resourceTemplates
-                            return
-                        })
-                    } catch (error) {
-                        console.error('Failed to load resource templates:', error);
-                    } finally {
-                        this.loadingTemplates = false;
-                    }
-
-                },
-                loadResources: function (resource_function) {
-                    this.loadingResources = true
-                    try {
-                        resource_function().then((result) => {
-                            console.log(result)
-                            this.resourceList = result.resources
-                            return
-                        })
-                    } catch (error) {
-                        console.error('Failed to load resources:', error);
-                    } finally {
-                        this.loadingResources = false;
-                    }
-
-                },
-            },
-        });
-
-        const usePromptStore = defineStore("promptStore", {
-            state: () => ({
-                promptDialog: false,
-                promptSheet: false,
-                promptList: [],
-                promptSelect: {},
-                search: '',
-                loading: false,
-            }),
-            actions: {
-                loadPrompts: function () {
-                    this.loading = true
-                    try {
-                        this.fetchPrompts().then((prompts) => {
-                            console.log(prompts)
-                            this.promptList = prompts
-                            return
-                        })
-                    } catch (error) {
-                        console.error('Failed to load prompts:', error);
-                    } finally {
-                        this.loading = false;
-                    }
-
-                },
-                fetchPrompts: async function () {
-                    const mcpStore = useMcpStore();
-                    const mcpServers = mcpStore.getServers
-                    if (!mcpServers) {
-                        return []
-                    }
-                    const mcpKeys = Object.keys(mcpServers)
-                    const allPrompts = []
-                    for (const key of mcpKeys) {
-                        const obj = await mcpServers[key]?.prompts?.list();
-                        if (obj) {
-                            obj.prompts.forEach(prompt => allPrompts.push({ title: key, ...prompt }));
-                        }
-                    }
-
-                    return allPrompts;
-                },
-                select: function (prompt) {
-                    console.log(prompt.title, prompt.name, prompt.arguments)
-                    this.promptSelect = prompt
-                    this.promptSheet = true
-                    this.promptDialog = false
-                },
-                fetchSelect: async function () {
-                    const mcpStore = useMcpStore();
-                    const mcpServers = mcpStore.getServers
-                    const getFun = mcpServers[this.promptSelect.title]?.prompts?.get
-                    if (!getFun) {
-                        return []
-                    }
-                    const params = { name: this.promptSelect.name }
-                    if (this.promptSelect.arguments) {
-                        for (const argument of this.promptSelect.arguments) {
-                            if (argument.name) {
-                                if (!params['arguments']) {
-                                    params['arguments'] = {};
-                                }
-                                params['arguments'][argument.name] = argument.content
-                            }
-                        }
-                    }
-
-                    console.log(params)
-                    const prompts = await getFun(params)
-
-                    const conversations = prompts.messages.map(item => {
-                        const content = mcpStore.convertItem(item.content)
-                        const conversation = {
-                            role: item.role,
-                            content: item.role == 'user' ? [content] : content.text
-                        }
-                        return conversation
-                    });
-
-                    this.promptSheet = false
-
-                    return conversations
-                },
-            },
-        });
-
-
-
-        const useSnackbarStore = defineStore("snackbarStore", {
-            state: () => ({
-                isShow: false,
-                message: "",
-                type: "",
-            }),
-
-            actions: {
-                showMessage(message, type = "") {
-                    this.isShow = true;
-                    this.message = message;
-                    this.type = type;
-                },
-
-                showErrorMessage(message) {
-                    this.showMessage(message, "error");
-                },
-                showSuccessMessage(message) {
-                    this.showMessage(message, "success");
-                },
-                showInfoMessage(message) {
-                    this.showMessage(message, "info");
-                },
-                showWarningMessage(message) {
-                    this.showMessage(message, "warning");
-                },
-                getIcon() {
-                    const icon = {
-                        info: "mdi-information",
-                        success: "mdi-check-circle",
-                        error: "mdi-alert-circle",
-                        warning: "mdi-alert",
-                    };
-
-                    return icon[this.type];
-                },
-            },
-        });
-
-        const TuuiImgDialog = {
-            template: '#tuui-img-dialog-template',
-            props: { src: { type: String, required: true } }
-        };
-
-
-        const TuuiChatCard = defineComponent({
-            template: '#tuui-chat-card-template',
-            props: {
-                index: { type: Number, required: true },
-                range: { type: Number, required: false, default: 1 },
-                messages: { type: Object, required: true },
-                showContent: { type: Boolean, default: false },
-                showDelete: { type: Boolean, default: true },
-                showReduce: { type: Boolean, default: true },
-                showModify: { type: Boolean, default: false },
-                showCopy: { type: Boolean, default: true },
-            },
-            setup(props) {
-                const showcontent = ref(false);
-                const showmodify = ref(false);
-                const snackbarStore = useSnackbarStore();
-
-                const copyToClipboard = async (msg) => {
-                    let textToCopy = '';
-                    try {
-                        if (typeof msg.content === 'string') {
-                            textToCopy = msg.content;
-                        } else if (Array.isArray(msg.content)) {
-                            for (const item of msg.content) {
-                                if (item.type === 'text' && typeof item.text === 'string') {
-                                    textToCopy = item.text;
-                                }
-                            }
-                        }
-                        await navigator.clipboard.writeText(textToCopy);
-                        snackbarStore.showSuccessMessage('$vuetify.dataIterator.snackbar.copied')
-                    } catch (err) {
-                        snackbarStore.showErrorMessage(err)
-                    }
-                };
-
-                return {
-                    copyToClipboard,
-                    showcontent,
-                    showmodify,
-                };
-            }
-        });
-        const TuuiChatBox = {
-            template: '#tuui-chat-box-template',
-            components: {
-                TuuiImgDialog,
-                TuuiChatCard,
-            },
-            props: {
-                messages: { type: Array, required: true },
-                size: { type: Number },
-                language: { type: String }
-            },
-            setup(props) {
-                const dialogs = reactive({});
-                const groupMessages = computed(() => {
-                    const groups = [];
-                    props.messages.forEach((message, index) => {
-                        if (message.role === 'user') {
-                            groups.push({
-                                index: index,
-                                group: 'user',
-                                message: message
-                            })
-                        } else if ((message.role === 'assistant') && (!message.tool_calls || message.tool_calls.length == 0)) {
-                            groups.push({
-                                index: index,
-                                group: 'assistant',
-                                message: message
-                            })
-                        } else {
-                            const lastGroup = groups.at(-1)
-                            if (lastGroup?.group == 'tool') {
-                                lastGroup.messages.push(message)
-                                dialogs[lastGroup.tab] = lastGroup.length
-                                lastGroup.length += 1
-                            } else {
-                                const id = message.tool_call_id || message.tool_calls[0]?.id
-                                groups.push({
-                                    index: index,
-                                    group: 'tool',
-                                    tab: id,
-                                    messages: [message],
-                                    length: 1
-                                })
-                                dialogs[id] = 0
-                            }
-                        }
-                    })
-                    return groups
-                });
-
-                return {
-                    dialogs,
-                    groupMessages
-                }
-            }
-        };
-
-        const app = createApp({
-            components: {
-                vuedraggable,
-                TuuiChatBox,
-                TuuiChatCard
-            },
-            setup() {
-
-                const snackbarStore = useSnackbarStore();
-                const mcpStore = useMcpStore();
-                const agentStore = useAgentStore();
-                const settingStore = useSettingStore();
-                const promptStore = usePromptStore();
-                const resourceStore = useResourceStore();
-
-                const { locale } = useI18n({ useScope: 'global' });
-
-                // Helper function to generate random conversation ID
-                const generateConversationId = () => {
-                    return 'conv_' + Math.random().toString(36).substring(2, 15);
-                };
-
-                const useLanguageStore = defineStore("languageStore", {
-                    state: () => ({
-                        list: [{ title: 'English', value: 'en', name: 'united-states' },
-                        { title: 'Italiano', value: 'it', name: 'italy' },
-                        { title: '日本語', value: 'ja', name: 'japan' },
-                        { title: 'Svenska', value: 'sv', name: 'sweden' },
-                        { title: '简体中文', value: 'zhHans', name: 'china' }
-                        ]
-                    }),
-                    getters: {
-                        getLocale: () => {
-                            return locale.value
-                        },
-                    },
-                    actions: {
-                        change(lang) {
-                            locale.value = lang;
-                        },
-                        getIcon(name) {
-                            return `twemoji:flag-${name}`
-                        },
-                        getIcon2() {
-                            const value = this.getLocale
-                            const item = this.list.find(lang => lang.value === value);
-                            return `twemoji:flag-${item.name}`
-                        }
-                    },
-                });
-
-                const useMessageStore = defineStore("messageStore", {
-                    state: () => ({
-                        userMessage: "",
-                        conversation: [],
-                        images: [],
-                        base64: '',
-                        generating: false
-                    }),
-                    actions: {
-                        init() {
-                            if (this.conversation.length === 0) {
-                                snackbarStore.showWarningMessage('$vuetify.dataIterator.snackbar.addfail')
-                            } else {
-                                this.conversation = [];
-                                // Generate random conversation_id for new conversation
-                                chatbotStore.conversation_id = generateConversationId();
-                                snackbarStore.showSuccessMessage('$vuetify.dataIterator.snackbar.addnew')
-                            }
-                        },
-                        stop() {
-                            this.generating = false;
-                            snackbarStore.showInfoMessage('$vuetify.dataIterator.snackbar.stopped')
-                        },
-                        clear() {
-                            this.userMessage = "";
-                            this.images = [];
-                        },
-                        handleKeydown(e) {
-                            if (e.key === "Enter" && e.shiftKey) {
-                                //  A new line by default
-                            } else if (e.key === "Enter") {
-                                // Only Enter is pressed, send message
-                                e.preventDefault();
-                                this.sendMessage();
-                            }
-                        },
-                        resendMessage() {
-                            // const conversation = this.conversation.reduce((newConversation, item) => {
-                            let index = this.conversation.length - 1;
-                            while (index >= 0 && this.conversation[index].role !== "user") {
-                                index--;
-                            }
-
-                            // when role == "user" is found，drop followings
-                            if (index >= 0) {
-                                this.conversation.splice(index + 1);;
-                                this.startInference();
-                            }
-                        },
-                        sendMessage() {
-                            if (this.userMessage) {
-                                // Add the message to the list
-
-                                const imageBase64 = this.base64;
-
-                                this.conversation.push({
-                                    content: imageBase64
-                                        ? [
-                                            { type: "image_url", image_url: { url: imageBase64 } },
-                                            { type: "text", text: this.userMessage }
-                                        ] : this.userMessage,
-                                    role: "user",
-                                });
-
-                                if (this.conversation.length == 1) {
-                                    historyStore.init(this.conversation)
-                                }
-
-                                this.startInference();
-                            }
-                        },
-                        applyPrompt: async function (fetchedPrompt) {
-                            const messages = await fetchedPrompt
-                            console.log(messages)
-                            this.conversation = messages
-
-                        },
-                        startInference: async function () {
-                            this.clear();
-                            await createCompletion(this.conversation);
-                            await this.postToolCall()
-                        },
-                        postToolCall: async function () {
-                            const last = this.conversation.at(-1)
-                            if (!last || !last.tool_calls) {
-                                return
-                            }
-                            if (last.tool_calls.length == 0) {
-                                delete last.tool_calls
-                                return
-                            }
-                            if (Object.keys(last.tool_calls[0]).length === 0) {
-                                delete last.tool_calls
-                                return
-                            } else {
-                                let tool_called = false
-                                console.log(last.tool_calls)
-
-                                const callNextTool = async (toolCalls, index) => {
-                                    if (index >= toolCalls.length) {
-                                        return;
-                                    }
-
-                                    const tool_call = toolCalls[index];
-
-                                    try {
-                                        const result = await mcpStore.callTool(
-                                            tool_call.function.name,
-                                            tool_call.function.arguments
-                                        );
-
-                                        console.log(result)
-
-                                        if (result.content) {
-                                            this.contentConvert(result.content, tool_call.id).forEach(item => {
-                                                this.conversation.push(item);
-                                            });
-                                            tool_called = true;
-                                        }
-
-                                        await callNextTool(toolCalls, index + 1);
-                                    } catch (error) {
-                                        const result = mcpStore.packReturn(`Error calling tool: ${error}`)
-                                        this.conversation.push({
-                                            role: "tool",
-                                            content: result.content,
-                                            tool_call_id: tool_call.id
-                                        });
-                                        tool_called = true;
-                                    }
-                                };
-
-                                await callNextTool(last.tool_calls, 0);
-
-                                if (tool_called) {
-                                    this.startInference()
-                                }
-                            }
-                        },
-                        contentConvert: function (content, toolCallId) {
-                            const msg = content.map(item => mcpStore.convertItem(item));
-                            console.log(msg)
-                            if (msg.find(item => item.type === 'image_url')) {
-                                return [{
-                                    role: "tool",
-                                    content: mcpStore.packReturn('Image provided in next user message').content,
-                                    tool_call_id: toolCallId
-                                }, {
-                                    role: "user",
-                                    content: msg,
-                                },
-                                ]
-                            } else {
-                                return [{
-                                    role: "tool",
-                                    content: msg.map(item => item.text).join('\n'), // If the LLM can support array in tool, use msg directly
-                                    tool_call_id: toolCallId
-                                }]
-                            }
-                        }
-                    }
-                });
-
-                const useHistoryStore = defineStore("historyStore", {
-                    state: () => ({
-                        conversation: [],
-                    }),
-                    persist: {
-                        enabled: true,
-                        strategies: [{ storage: localStorage }],
-                    },
-                    getters: {
-                        getDate: () => {
-                            const date = new Date().toLocaleString('zh', { timeZoneName: 'short', hour12: false })
-                            return date
-                        },
-
-                    },
-                    actions: {
-                        resetState() {
-                            this.$reset();
-                        },
-                        deleteById(index) {
-                            this.conversation.splice(index, 1);
-                        },
-                        init(conversation) {
-                            this.conversation.unshift({
-                                id: this.getDate,
-                                history: conversation
-                            });
-                        },
-                        replace(id) {
-                            this.deleteById(id)
-                            this.init(messageStore.conversation)
-                        },
-                        asyncReplace: async (id) => {
-                            await nextTick();
-                            historyStore.replace(id)
-                        },
-                        select(id) {
-                            settingStore.configHistory = false
-                            messageStore.conversation = this.conversation[id].history
-                            this.asyncReplace(id)
-                        },
-                        getColor(id) {
-                            const targetElement = this.conversation[id]?.history.find(element => element.role === "assistant");
-                            if (targetElement) {
-                                return "primary"
-                            } else {
-                                return "grey"
-                            }
-
-                        },
-                        downloadById(id) {
-                            const name = this.conversation[id].id.replace(/[/: ]/g, '-');
-                            this.download(this.conversation[id].history, `history-${name}.json`);
-                        },
-                        downloadHistory() {
-                            this.download(this.conversation, 'history.json')
-                        },
-                        download(json, filename) {
-                            const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' });
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = filename;
-                            a.click();
-                            URL.revokeObjectURL(url);
-                        }
-                    }
-                });
-
-
-                const useDefaultChoiceStore = defineStore("defaultChoiceStore", {
-                    state: () => ({
-                        url: [
-                            "https://api.openai.com",
-                            "http://127.0.0.1",
-                            "https://api.deepinfra.com",
-                            "https://api.deepseek.com",
-                            "https://api.aiql.com"],
-                        path: [
-                            "/chat/completions",
-                            "/v1/chat/completions",
-                            "/v1/openai/chat/completions",
-                            "/openai/v1/chat/completions"],
-                        model: [
-                            "Qwen/Qwen3-32B",
-                            "Qwen/Qwen3-Coder-480B-A35B-Instruct-Turbo",
-                            "openai/gpt-oss-120b"
-                        ],
-                        authPrefix: ["Bearer", "Base", "Token"],
-                        max_tokens_type: ["max_tokens", "max_completion_tokens", "max_new_tokens"],
-                        reasoning_efforts: ['false', 'none', 'low', 'medium', 'high']
-                    }),
-                    persist: {
-                        enabled: true,
-                        strategies: [{ storage: localStorage }],
-                        // paths: ["apiKey"] 
-                    },
-                    actions: {
-                        resetState() {
-                            this.$reset();
-                        },
-                        updateStoreFromJSON(json) {
-                            this.$reset();
-                            this.$state = json;
-                        }
-                    },
-                });
-
-
-                const useChatbotStore = defineStore("chatbotStore", {
-                    state: () => ({
-                        apiKey: "",
-                        url: "",
-                        path: "/v1/chat/completions",
-                        model: "llama-model",
-                        conversation_id: generateConversationId(),
-                        authPrefix: "Bearer",
-                        contentType: "application/json",
-                        max_tokens_type: "max_tokens",
-                        max_tokens_value: "",
-                        temperature: "",
-                        top_p: "",
-                        method: "POST",
-                        stream: true,
-                        thinking: true,
-                        reasoning_effort: null,
-                        mcp: false
-                    }),
-
-                    persist: {
-                        enabled: true,
-                        strategies: [{ storage: localStorage }],
-                        // paths: ["apiKey"] 
-                    },
-
-                    actions: {
-                        resetState() {
-                            this.$reset();
-                            defaultChoiceStore.resetState()
-                        },
-                        updateStoreFromJSON(json) {
-                            this.$reset();
-                            this.$state = json;
-                        }
-                    },
-
-                });
-
-                const chatbotStore = useChatbotStore();
-                const messageStore = useMessageStore();
-                const historyStore = useHistoryStore();
-                const defaultChoiceStore = useDefaultChoiceStore();
-                const languageStore = useLanguageStore();
-
-                const createCompletion = async (rawconversation) => {
-                    const conversation = rawconversation.reduce((newConversation, item) => {
-                        if (item.role === "assistant") {
-                            const { reasoning_content, ...rest } = item;
-                            newConversation.push(rest);
-                        }
-                        // (item.role === "user" && item.content[0].type === "image_url") {
-                        //     // Image is too large, only latest query could be kept
-                        //     newConversation = [item];
-                        // }
-                        else {
-                            newConversation.push(item);
-                        }
-                        return newConversation;
-                    }, []);
-                    // const conversation = rawconversation
-                    try {
-                        messageStore.generating = true
-                        // Create a completion (axios is not used here because it does not support streaming)
-                        const headers = {
-                            "Content-Type": chatbotStore.contentType,
-                        };
-
-                        if (chatbotStore.apiKey) headers.Authorization = `${chatbotStore.authPrefix} ${chatbotStore.apiKey}`
-
-                        const body = {
-                            messages: agentStore.promptMessage(conversation),
-                            model: chatbotStore.model,
-                            conversation_id: chatbotStore.conversation_id,
-                            stream: chatbotStore.stream,
-                        }
-
-                        if (chatbotStore.max_tokens_value) {
-                            body[chatbotStore.max_tokens_type] = parseInt(chatbotStore.max_tokens_value)
-                        }
-
-                        if (typeof chatbotStore.reasoning_effort === 'string') {
-                            if (chatbotStore.reasoning_effort === 'false') {
-                                // For Python API backends such as extra_body.chat_template_kwargs
-                                body['chat_template_kwargs'] = { enable_thinking: false }
-                            } else {
-                                // For OpenAI OpenAPI backends such as ChatGPT or DeepInfra
-                                body['reasoning_effort'] = chatbotStore.reasoning_effort
-                            }
-                        }
-
-                        if (chatbotStore.temperature) {
-                            body["temperature"] = parseFloat(chatbotStore.temperature)
-                        }
-
-                        if (chatbotStore.top_p) {
-                            body["top_p"] = parseFloat(chatbotStore.top_p)
-                        }
-
-                        if (chatbotStore.mcp) {
-                            body["tools"] = await mcpStore.listTools()
-                        }
-
-                        const request = {
-                            headers: headers,
-                            method: chatbotStore.method,
-                            body: JSON.stringify(body),
-                        };
-
-                        const completion = await fetch(
-                            chatbotStore.url + (chatbotStore.path ? chatbotStore.path : ''),
-                            request
-                        );
-
-                        console.log(completion)
-
-                        // Handle errors
-                        if (!completion.ok) {
-                            const errorData = await completion.json();
-                            console.log(errorData.error?.message);
-                            if (errorData.error?.message)
-                                snackbarStore.showErrorMessage(`${completion.status}: ${errorData.error.message}`);
-                            else if (errorData.detail[0]?.msg)
-                                snackbarStore.showErrorMessage(`${completion.status}${(" - " + errorData.detail[0]?.loc + ":") || ":"} ${errorData.detail[0]?.msg}`);
-                            else
-                                snackbarStore.showErrorMessage(`${completion.status}: ${completion.statusText}`);
-                            return;
-                        }
-
-                        // Create a reader
-                        const reader = completion.body?.getReader();
-                        if (!reader) {
-                            snackbarStore.showErrorMessage('$vuetify.dataIterator.snackbar.parseStreamFail');
-                        }
-
-                        // Add the bot message
-                        messageStore.conversation.push({
-                            content: "",
-                            reasoning_content: "",
-                            tool_calls: [],
-                            role: "assistant",
-                        });
-
-                        let buffer = ''
-
-                        // Read the stream
-                        await read(reader, messageStore.conversation.at(-1), buffer, chatbotStore.stream);
-                    } catch (error) {
-                        snackbarStore.showErrorMessage(error.message);
-                    } finally {
-                        messageStore.generating = false
-                    }
-                };
-
-                const read = async (
-                    reader,
-                    target,
-                    buffer,
-                    stream
-                ) => {
-                    // TextDecoder is a built-in object that allows you to convert a stream of bytes into a string
-                    const decoder = new TextDecoder();
-                    // Destructure the value returned by reader.read()
-                    const { done, value } = await reader.read();
-
-                    // If the stream is done reading, release the lock on the reader
-                    if (done || !messageStore.generating) {
-                        messageStore.generating = false;
-                        return reader.releaseLock();
-                    }
-                    // Convert the stream of bytes into a string
-                    const chunks = decoder.decode(value);
-
-                    if (stream) {
-                        // Split stream
-                        let parts = chunks.split('\n')
-
-                        if (parts.length === 1) {
-                            buffer += parts[0]
-                            return read(reader, target, buffer, stream);
-                        }
-
-                        if (buffer.length > 0) {
-                            parts[0] = buffer + parts[0];
-                            buffer = ''
-                        }
-
-                        const last = parts[parts.length - 1];
-                        if (last && last.length > 0) {
-                            buffer = parts.pop();
-                        }
-
-                        parts
-                            .map((line) => line.trim())
-                            .filter((line) => line.length > 0)
-                            .forEach((line) => {
-                                const pos = line.indexOf(':');
-                                const name = line.substring(0, pos);
-                                if (name !== 'data') {
-                                    return
-                                }
-                                const content = line.substring(pos + 1).trim()
-                                if (content.length === 0) {
-                                    return
-                                } else if (content === "[DONE]") {
-                                    return
-                                }
-                                parseJson(content, target)
-                            })
-
-                    } else {
-                        parseJson(chunks, target)
-                    }
-
-                    // Repeat the process
-                    return read(reader, target, buffer, stream);
-                };
-
-                const parseJson = (content, target) => {
-                    try {
-                        const parsed = JSON.parse(content)
-                        // const choice = 
-                        parseChoices(parsed, target)
-                        // parseChoice(choice, target)
-                    } catch (e) {
-                        console.log(e, content)
-                        parseChoice(content, target)
-                    }
-                };
-
-                const parseChoices = (parsed, target) => {
-                    if ('choices' in parsed) {
-                        return parsed.choices.map((choice) => {
-                            const content = choice.delta || choice.message
-                            return parseChoice(content, target)
-                        })
-                    } else if ('response' in parsed) {
-                        return parseChoice(parsed.response, target)
-                    } else {
-                        return parseChoice(parsed, target)
-                    }
-                };
-
-                const parseChoice = (choice, target) => {
-                    if (choice) {
-                        if (target.role == 'assistant') {
-                            if (typeof choice === 'string') {
-                                target.content += choice;
-                            } else {
-                                if (typeof choice.content === 'string') {
-                                    target.content += choice.content;
-                                }
-                                if (typeof choice.reasoning_content === 'string') {
-                                    target.reasoning_content += choice.reasoning_content;
-                                }
-                            }
-                            parseTool(choice.tool_calls, target)
-                        }
-                    }
-                };
-
-                const parseTool = (tools, target) => {
-                    if (tools) {
-                        tools.map((tool) => {
-                            const lastTool = target.tool_calls.at(-1)
-                            if (lastTool && (!tool.id || lastTool.id == tool.id)) {
-                                const source = tool.function
-                                for (const key in source) {
-                                    // Determine if source[key] is null, skip if it is null
-                                    if (source[key] === null) {
-                                        continue;
-                                    }
-                                    if (lastTool.function[key]) {
-                                        lastTool.function[key] += source[key];
-                                    } else {
-                                        lastTool.function[key] = source[key];
-                                    }
-                                }
-
-                            } else {
-                                target.tool_calls.push(tool)
-                            }
-                        })
-                    }
-                };
-
-                watch(computed(() => messageStore.conversation.at(-1)?.content),
-                    (newValue, oldValue) => {
-                        if (newValue !== oldValue) {
-                            asyncScrollToBottom();
-                        }
-                    }, { deep: true });
-
-                watch(computed(() => messageStore.images),
-                    (newValue, oldValue) => {
-                        if (newValue.length === 0) {
-                            messageStore.base64 = '';
-                        } else {
-                            const file = messageStore.images; // Assuming you're working with a single image
-                            const reader = new FileReader();
-                            const MAX_WIDTH = 2048;
-                            const MAX_HEIGHT = 2048; // adjust these values as needed
-
-                            reader.onload = (e) => {
-                                const img = new Image();
-                                img.onload = () => {
-                                    let width = img.width;
-                                    let height = img.height;
-                                    let quality = 0.8;
-
-                                    // Check if the image exceeds the maximum dimensions
-                                    if (width > MAX_WIDTH || height > MAX_HEIGHT) {
-                                        // Calculate the scaling factor
-                                        const scaleFactor = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height);
-
-                                        // Resize the image
-                                        width *= scaleFactor;
-                                        height *= scaleFactor;
-                                        quality *= scaleFactor;
-
-                                    }
-
-                                    const canvas = document.createElement('canvas');
-                                    const ctx = canvas.getContext('2d');
-
-                                    // Set canvas dimensions to match the resized image
-                                    canvas.width = width;
-                                    canvas.height = height;
-
-                                    // Draw the image on the canvas
-                                    ctx.drawImage(img, 0, 0, width, height);
-
-                                    // Convert the canvas to a PNG data URL
-                                    const pngDataUrl = canvas.toDataURL('image/jpeg', quality);
-
-                                    // Store the PNG data URL in messageStore.base64
-                                    messageStore.base64 = pngDataUrl;
-                                };
-                                img.src = e.target.result;
-                            };
-                            reader.readAsDataURL(file);
-                        }
-                    }, { deep: true });
-
-                const asyncScrollToBottom = async () => {
-                    // await nextTick();
-                    requestAnimationFrame(() => {
-                        scrollToBottom(document.querySelector(".chat-bot"));
-                    });
-                }
-
-                const scrollToBottom = (
-                    element,
-                    options = { behavior: "auto" }
-                ) => {
-                    window.scrollTo({
-                        ...options,
-                        top: element?.scrollHeight
-                    });
-                };
-
-                const initLottie = () => {
-                    lottie.loadAnimation({
-                        container: document.getElementById('lottie'), // the dom element that will contain the animation
-                        renderer: 'svg',
-                        loop: true,
-                        autoplay: true,
-                        path: '/assets/lottie.json' // the path to the animation json
-                    });
-                };
-
-                onMounted(async () => {
-                    initLottie();
-                    agentStore.initAgent();
-                    resizeAvatar()
-                    window.onresize = () => resizeAvatar()
-                    resizeInputBox()
-                });
-
-                const resizeInputBox = () => {
-                    const inputBox = document.querySelector(".input-box");
-                    const handleResize = (entries) => {
-                        for (const entry of entries) {
-                            if (entry.target === inputBox) {
-                                const chatElement = document.querySelector(".chat-bot");
-                                if (chatElement) {
-                                    chatElement.style.marginBottom = `${Math.max(entry.contentRect.height, 122)}px`
-                                }
-                            }
-                        }
-                    };
-                    const resizeObserver = new ResizeObserver(handleResize);
-                    if (inputBox) {
-                        resizeObserver.observe(inputBox);
-                    }
-                };
-
-                const resizeAvatar = () => {
-                    // console.log(window.innerWidth)
-                    if (window.innerWidth <= 1279) {
-                        settingStore.avatarSize = 26
-                    } else {
-                        settingStore.avatarSize = 36
-                    }
-                };
-
-                const configFile = ref(null)
-
-                watch(configFile, (newValue, oldValue) => {
-                    if (newValue) {
-
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                            try {
-                                const json = JSON.parse(event.target.result)
-                                chatbotStore.updateStoreFromJSON(json.chatbotStore)
-                                defaultChoiceStore.updateStoreFromJSON(json.defaultChoiceStore)
-                            } catch {
-                                snackbarStore.showErrorMessage('$vuetify.dataIterator.snackbar.parseConfigFail')
-                            }
-
-                        };
-                        reader.readAsText(newValue);
-                    }
-                });
-
-                watch(computed(() => agentStore.card?.refFile),
-                    (newValue, oldValue) => {
-                        const reader = new FileReader();
-                        if (agentStore.card?.refFile === null) {
-                            agentStore.card.refText = ""
-                            return
-                        }
-                        if (newValue?.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-                            reader.onload = (event) => {
-                                mammoth.extractRawText({ arrayBuffer: event.target.result })
-                                    .then(function (result) {
-                                        var text = result.value; // The raw text
-                                        agentStore.card.refText = text
-                                        // var messages = result.messages; // The warning
-                                    })
-                                    .catch(function (error) {
-                                        console.error(error);
-                                    });
-                            };
-                            reader.readAsArrayBuffer(newValue);
-                        } else if (newValue?.name?.length > 0) {
-                            reader.onload = (event) => {
-                                agentStore.card.refText = event.target.result
-                            };
-                            reader.readAsText(newValue);
-                        }
-
-                    }, { deep: true });
-
-                document.fonts.ready.then(() => {
-                    settingStore.fontStatus = true
-                });
-
-                const resetALL = () => {
-                    historyStore.resetState()
-                    chatbotStore.resetState()
-                    defaultChoiceStore.resetState()
-                };
-
-                return {
-                    configFile,
-
-                    settingStore,
-                    promptStore,
-                    resourceStore,
-                    agentStore,
-                    snackbarStore,
-                    mcpStore,
-
-                    messageStore,
-                    defaultChoiceStore,
-                    chatbotStore,
-                    historyStore,
-
-                    languageStore,
-
-                    resetALL,
-
-                };
-            }
-
-        })
 
         const messages = {
             en: {
@@ -2711,13 +1260,557 @@
 
         pinia.use(piniaPersist.default)
 
-        app.use(i18n)
-        app.use(vuetify)
-        app.use(pinia)
-        app.use(MdEditorV3.MdPreview)
+        // Helper functions
+        const generateConversationId = () => {
+            return 'conv_' + Math.random().toString(36).substring(2, 15);
+        };
 
-        app.mount('#app')
+        const scrollToBottom = (element, options = { behavior: "auto" }) => {
+            window.scrollTo({
+                ...options,
+                top: element?.scrollHeight
+            });
+        };
 
+        const asyncScrollToBottom = async () => {
+            requestAnimationFrame(() => {
+                scrollToBottom(document.querySelector(".chat-bot"));
+            });
+        }
+
+        const initLottie = () => {
+            lottie.loadAnimation({
+                container: document.getElementById('lottie'),
+                renderer: 'svg',
+                loop: true,
+                autoplay: true,
+                path: '/assets/lottie.json'
+            });
+        };
+
+        // Stores
+        const useSnackbarStore = defineStore("snackbarStore", {
+            state: () => ({
+                isShow: false,
+                message: "",
+                type: "",
+            }),
+            actions: {
+                showMessage(message, type = "") {
+                    this.isShow = true;
+                    this.message = message;
+                    this.type = type;
+                },
+                showErrorMessage(message) { this.showMessage(message, "error"); },
+                showSuccessMessage(message) { this.showMessage(message, "success"); },
+                showInfoMessage(message) { this.showMessage(message, "info"); },
+                showWarningMessage(message) { this.showMessage(message, "warning"); },
+                getIcon() {
+                    const icon = { info: "mdi-information", success: "mdi-check-circle", error: "mdi-alert-circle", warning: "mdi-alert" };
+                    return icon[this.type];
+                },
+            },
+        });
+
+        const useMcpStore = defineStore("mcpStore", {
+            state: () => ({ serverTools: [], loading: true }),
+            getters: { getServers: () => window.mcpServers },
+            actions: {
+                listServerResources: function () {
+                    const mcpServers = this.getServers
+                    const mcpKeys = Object.keys(mcpServers)
+                    const mcpResources = []
+                    for (const key of mcpKeys) {
+                        const resources = mcpServers[key]?.resources
+                        if (resources) {
+                            mcpResources.push({ name: key, list: resources.list, templatesList: resources['templates/list'] })
+                        }
+                    }
+                    return mcpResources
+                },
+                loadTools: function () {
+                    this.loading = true
+                    try {
+                        this.listTools().then((tools) => {
+                            this.serverTools = tools.map(tool => ({ name: tool.function.name, description: tool.function.description }))
+                        })
+                    } catch (error) { console.error('Failed to load tools:', error); } finally { this.loading = false; }
+                },
+                listTools: async function () {
+                    const mcpServers = this.getServers
+                    if (!mcpServers) return null
+                    const mcpKeys = Object.keys(mcpServers)
+                    const mcpTools = []
+                    for (const key of mcpKeys) {
+                        const toolsListFunction = mcpServers[key]?.tools?.list;
+                        if (typeof toolsListFunction === 'function') {
+                            const tools = await toolsListFunction();
+                            if (tools && Array.isArray(tools.tools)) {
+                                for (const tool of tools.tools) {
+                                    mcpTools.push({ type: 'function', function: { name: tool.name, description: tool.description, parameters: tool.inputSchema } });
+                                }
+                            }
+                        }
+                    }
+                    return mcpTools
+                },
+                getTool: async function (tool_name) {
+                    const mcpServers = this.getServers;
+                    const mcpKeys = Object.keys(mcpServers);
+                    return await Promise.any(mcpKeys.map(async (key) => {
+                        const toolsListFunction = mcpServers[key]?.tools?.list;
+                        if (typeof toolsListFunction === 'function') {
+                            const tools = await toolsListFunction();
+                            if (tools && Array.isArray(tools.tools)) {
+                                const foundTool = tools.tools.find(tool => tool.name === tool_name);
+                                if (foundTool) return { server: key, tool: foundTool };
+                            }
+                        }
+                        throw new Error(`Tool ${tool_name} not found`);
+                    }));
+                },
+                callTool: async function (tool_name, tool_args) {
+                    const tool = await this.getTool(tool_name)
+                    if (!tool) return this.packReturn(`Tool name '${tool_name}' not found`)
+                    let tool_arguments
+                    try { tool_arguments = JSON.parse(tool_args) } catch (e) { return this.packReturn(`Arguments JSON parse error: '${e}'`) }
+                    return await this.getServers[tool.server].tools.call({ name: tool_name, arguments: tool_arguments })
+                },
+                convertItem: function (item) {
+                    if (item.type === "text") return item;
+                    if (item.type === "image") return { type: 'image_url', image_url: { url: `data:${item.mimeType};base64,${item.data}` } };
+                },
+                packReturn: (string) => ({ content: [{ type: 'text', text: string }] })
+            },
+        });
+
+        const useAgentStore = defineStore("agentStore", {
+            state: () => ({ card: null, columns: [], editDialog: false }),
+            persist: { enabled: true, strategies: [{ storage: sessionStorage }] },
+            getters: { getDragOption: () => ({ animation: 200, group: "task", disabled: false, ghostClass: "ghost" }) },
+            actions: {
+                addCard(column) {
+                    const { addTitle, key } = column;
+                    if (!addTitle) return;
+                    column.cards.unshift({ id: "_" + Math.random().toString(36).substring(2, 11), state: key, title: addTitle, description: "", refFile: null, refText: "", order: -1 });
+                    column.addTitle = "";
+                    column.isAddVisible = false;
+                },
+                deleteCard(column, index) { column.cards.splice(index, 1); },
+                editCard(card) { this.card = { ...card }; this.editDialog = true; },
+                saveCard() {
+                    if (this.card) {
+                        let foundCard = this.columns.flatMap(c => c.cards).find(c => c.id === this.card.id);
+                        if (foundCard) { Object.assign(foundCard, this.card); this.editDialog = false; }
+                    }
+                },
+                promptMessage(conversation) {
+                    const result = this.columns[0].cards.filter(c => c.description !== "" || c.refText !== "").map(c => c.refText ? `${c.description}\n###\n${c.refText}\n###` : c.description).join('\n\n');
+                    return result ? [{ content: result, role: "system" }, ...conversation] : [...conversation];
+                },
+                initAgent() {
+                    this.$reset();
+                    const states = ["PROMPT", "BACKUP"];
+                    states.forEach((state, index) => {
+                        this.columns.push({ key: state, cards: [], isAddVisible: false, callback: (e) => {
+                            if (e.added || e.moved) {
+                                const column = this.columns[index];
+                                column.cards.forEach((card, i) => { card.order = i; card.state = column.key; });
+                            }
+                        }});
+                    });
+                    this.parseCards([{ id: 1, title: "Prompt 1", description: "", state: "PROMPT" }]);
+                },
+                parseCards(cards) {
+                    if (!cards) return this.columns.forEach(c => c.cards = []);
+                    this.columns.forEach(c => c.cards = cards.filter(card => card.state === c.key).sort((a, b) => a.order < b.order ? -1 : 0));
+                },
+            },
+        });
+
+        const useSettingStore = defineStore("settingStore", {
+            state: () => ({ inputRow: 1, avatarSize: 24, configDialog: false, configHistory: false, agentDialog: false, apiKeyShow: false, toolboxShow: false, fontStatus: false }),
+            actions: {
+                initDialog() { this.apiKeyShow = false; this.configDialog = true; },
+                setInputRow(int, timeout) { setTimeout(() => { this.inputRow = int }, timeout); }
+            },
+        });
+
+        const useResourceStore = defineStore("resourceStore", {
+            state: () => ({ resourceDialog: false, tab: null, resourceList: [], resourceTemplatesList: [], loadingTemplates: false, loadingResources: false }),
+            actions: {
+                loadTemplates(fn) {
+                    this.loadingTemplates = true;
+                    fn().then(res => { this.resourceTemplatesList = res.resourceTemplates }).finally(() => { this.loadingTemplates = false; });
+                },
+                loadResources(fn) {
+                    this.loadingResources = true;
+                    fn().then(res => { this.resourceList = res.resources }).finally(() => { this.loadingResources = false; });
+                }
+            }
+        });
+
+        const usePromptStore = defineStore("promptStore", {
+            state: () => ({ promptDialog: false, promptSheet: false, promptList: [], promptSelect: {}, search: '', loading: false }),
+            actions: {
+                loadPrompts() {
+                    this.loading = true;
+                    this.fetchPrompts().then(p => { this.promptList = p }).finally(() => { this.loading = false; });
+                },
+                async fetchPrompts() {
+                    const mcpServers = useMcpStore().getServers;
+                    if (!mcpServers) return [];
+                    const allPrompts = [];
+                    for (const key of Object.keys(mcpServers)) {
+                        const obj = await mcpServers[key]?.prompts?.list();
+                        if (obj) obj.prompts.forEach(p => allPrompts.push({ title: key, ...p }));
+                    }
+                    return allPrompts;
+                },
+                select(p) { this.promptSelect = p; this.promptSheet = true; this.promptDialog = false; },
+                async fetchSelect() {
+                    const mcpStore = useMcpStore();
+                    const getFun = mcpStore.getServers[this.promptSelect.title]?.prompts?.get;
+                    if (!getFun) return [];
+                    const params = { name: this.promptSelect.name, arguments: {} };
+                    if (this.promptSelect.arguments) this.promptSelect.arguments.forEach(a => { if (a.name) params.arguments[a.name] = a.content });
+                    const prompts = await getFun(params);
+                    this.promptSheet = false;
+                    return prompts.messages.map(m => ({ role: m.role, content: m.role == 'user' ? [mcpStore.convertItem(m.content)] : mcpStore.convertItem(m.content).text }));
+                }
+            }
+        });
+
+        const useLanguageStore = defineStore("languageStore", {
+            state: () => ({
+                list: [
+                    { title: 'English', value: 'en', name: 'united-states' },
+                    { title: 'Italiano', value: 'it', name: 'italy' },
+                    { title: '日本語', value: 'ja', name: 'japan' },
+                    { title: 'Svenska', value: 'sv', name: 'sweden' },
+                    { title: '简体中文', value: 'zhHans', name: 'china' }
+                ]
+            }),
+            getters: { getLocale: () => i18n.global.locale.value },
+            actions: {
+                change(lang) { i18n.global.locale.value = lang; },
+                getIcon: (name) => `twemoji:flag-${name}`,
+                getIcon2() { return `twemoji:flag-${this.list.find(l => l.value === this.getLocale).name}`; }
+            }
+        });
+
+        const useChatbotStore = defineStore("chatbotStore", {
+            state: () => ({ apiKey: "", url: "", path: "/v1/chat/completions", model: "Local AI", conversation_id: generateConversationId(), authPrefix: "Bearer", contentType: "application/json", max_tokens_type: "max_tokens", max_tokens_value: "", temperature: "", top_p: "", method: "POST", stream: true, thinking: true, reasoning_effort: null, mcp: false }),
+            persist: { enabled: true, strategies: [{ storage: localStorage }] },
+            actions: {
+                resetState() { this.$reset(); useDefaultChoiceStore().resetState(); },
+                updateStoreFromJSON(json) { this.$reset(); this.$state = json; }
+            }
+        });
+
+        const useDefaultChoiceStore = defineStore("defaultChoiceStore", {
+            state: () => ({
+                url: ["https://api.openai.com", "http://127.0.0.1", "https://api.deepinfra.com", "https://api.deepseek.com", "https://api.aiql.com"],
+                path: ["/chat/completions", "/v1/chat/completions", "/v1/openai/chat/completions", "/openai/v1/chat/completions"],
+                model: ["Qwen/Qwen3-32B", "Qwen/Qwen3-Coder-480B-A35B-Instruct-Turbo", "openai/gpt-oss-120b"],
+                authPrefix: ["Bearer", "Base", "Token"],
+                max_tokens_type: ["max_tokens", "max_completion_tokens", "max_new_tokens"],
+                reasoning_efforts: ['false', 'none', 'low', 'medium', 'high']
+            }),
+            persist: { enabled: true, strategies: [{ storage: localStorage }] },
+            actions: { resetState() { this.$reset(); }, updateStoreFromJSON(json) { this.$reset(); this.$state = json; } }
+        });
+
+        const useHistoryStore = defineStore("historyStore", {
+            state: () => ({ conversation: [] }),
+            persist: { enabled: true, strategies: [{ storage: localStorage }] },
+            getters: { getDate: () => new Date().toLocaleString('zh', { timeZoneName: 'short', hour12: false }) },
+            actions: {
+                resetState() { this.$reset(); },
+                deleteById(index) { this.conversation.splice(index, 1); },
+                init(conv) { this.conversation.unshift({ id: this.getDate, history: conv }); },
+                replace(id) { this.deleteById(id); this.init(useMessageStore().conversation); },
+                asyncReplace: async (id) => { await nextTick(); useHistoryStore().replace(id); },
+                select(id) { useSettingStore().configHistory = false; useMessageStore().conversation = this.conversation[id].history; this.asyncReplace(id); },
+                getColor(id) { return this.conversation[id]?.history.find(e => e.role === "assistant") ? "primary" : "grey"; },
+                downloadById(id) { this.download(this.conversation[id].history, `history-${this.conversation[id].id.replace(/[/: ]/g, '-')}.json`); },
+                downloadHistory() { this.download(this.conversation, 'history.json'); },
+                download(json, filename) {
+                    const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url);
+                }
+            }
+        });
+
+        const useMessageStore = defineStore("messageStore", {
+            state: () => ({ userMessage: "", conversation: [], images: [], base64: '', generating: false }),
+            actions: {
+                init() {
+                    if (this.conversation.length === 0) useSnackbarStore().showWarningMessage('$vuetify.dataIterator.snackbar.addfail');
+                    else { this.conversation = []; useChatbotStore().conversation_id = generateConversationId(); useSnackbarStore().showSuccessMessage('$vuetify.dataIterator.snackbar.addnew'); }
+                },
+                stop() { this.generating = false; useSnackbarStore().showInfoMessage('$vuetify.dataIterator.snackbar.stopped'); },
+                clear() { this.userMessage = ""; this.images = []; },
+                handleKeydown(e) { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); this.sendMessage(); } },
+                resendMessage(atIndex) {
+                    let index = atIndex !== undefined ? atIndex : this.conversation.length - 1;
+                    while (index >= 0 && this.conversation[index].role !== "user") index--;
+                    if (index >= 0) { this.conversation.splice(index + 1); this.startInference(); }
+                },
+                sendMessage() {
+                    if (this.userMessage) {
+                        this.conversation.push({ content: this.base64 ? [{ type: "image_url", image_url: { url: this.base64 } }, { type: "text", text: this.userMessage }] : this.userMessage, role: "user" });
+                        if (this.conversation.length == 1) useHistoryStore().init(this.conversation);
+                        this.startInference();
+                    }
+                },
+                applyPrompt: async function (fetchedPrompt) { this.conversation = await fetchedPrompt; },
+                startInference: async function () { this.clear(); await createCompletion(this.conversation); await this.postToolCall(); },
+                postToolCall: async function () {
+                    const last = this.conversation.at(-1);
+                    if (!last || !last.tool_calls || last.tool_calls.length == 0) return;
+                    let tool_called = false;
+                    const callNextTool = async (toolCalls, index) => {
+                        if (index >= toolCalls.length) return;
+                        const tool_call = toolCalls[index];
+                        try {
+                            const result = await useMcpStore().callTool(tool_call.function.name, tool_call.function.arguments);
+                            if (result.content) { this.contentConvert(result.content, tool_call.id).forEach(item => this.conversation.push(item)); tool_called = true; }
+                            await callNextTool(toolCalls, index + 1);
+                        } catch (error) {
+                            this.conversation.push({ role: "tool", content: useMcpStore().packReturn(`Error: ${error}`).content, tool_call_id: tool_call.id });
+                            tool_called = true;
+                        }
+                    };
+                    await callNextTool(last.tool_calls, 0);
+                    if (tool_called) this.startInference();
+                },
+                contentConvert: (content, toolCallId) => {
+                    const msg = content.map(item => useMcpStore().convertItem(item));
+                    return msg.find(i => i.type === 'image_url') ? [{ role: "tool", content: useMcpStore().packReturn('Image provided next').content, tool_call_id: toolCallId }, { role: "user", content: msg }] : [{ role: "tool", content: msg.map(i => i.text).join('\n'), tool_call_id: toolCallId }];
+                }
+            }
+        });
+
+        // Components
+        const TuuiImgDialog = { template: '#tuui-img-dialog-template', props: { src: { type: String, required: true } } };
+
+        const TuuiChatCard = defineComponent({
+            template: '#tuui-chat-card-template',
+            props: { index: Number, range: { type: Number, default: 1 }, messages: Array, currentMessage: Object, showContent: { type: Boolean, default: false }, showDelete: { type: Boolean, default: true }, showReduce: { type: Boolean, default: true }, showModify: { type: Boolean, default: false }, showCopy: { type: Boolean, default: true } },
+            setup(props) {
+                const showcontent = ref(false);
+                const showmodify = ref(false);
+                const handleCopyToClipboard = (msg) => {
+                    if (!msg) return;
+                    let text = typeof msg.content === 'string' ? msg.content : (Array.isArray(msg.content) ? msg.content.filter(i => i.type === 'text').map(i => i.text).join('\n') : '');
+                    if (!text) return;
+                    const done = () => useSnackbarStore().showSuccessMessage('$vuetify.dataIterator.snackbar.copied');
+                    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text));
+                    else fallbackCopy(text);
+                };
+                const fallbackCopy = (text) => {
+                    const ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.left = "-9999px"; document.body.appendChild(ta); ta.select();
+                    try { if (document.execCommand('copy')) useSnackbarStore().showSuccessMessage('$vuetify.dataIterator.snackbar.copied'); } catch (e) { useSnackbarStore().showErrorMessage('Failed to copy'); }
+                    finally { document.body.removeChild(ta); }
+                };
+                return { handleCopyToClipboard, showcontent, showmodify, handleModifyToggle: (index) => { if (showmodify.value) { showmodify.value = false; useMessageStore().resendMessage(index); } else showmodify.value = true; } };
+            }
+        });
+
+        const TuuiChatBox = {
+            template: '#tuui-chat-box-template',
+            components: { TuuiImgDialog, TuuiChatCard },
+            props: { messages: Array, size: Number, language: String },
+            setup(props) {
+                const dialogs = reactive({});
+                const groupMessages = computed(() => {
+                    const groups = [];
+                    props.messages.forEach((m, i) => {
+                        if (m.role === 'user') groups.push({ index: i, group: 'user', message: m });
+                        else if (m.role === 'assistant' && (!m.tool_calls || m.tool_calls.length == 0)) groups.push({ index: i, group: 'assistant', message: m });
+                        else {
+                            const last = groups.at(-1);
+                            if (last?.group == 'tool') { last.messages.push(m); dialogs[last.tab] = last.length; last.length++; }
+                            else { const id = m.tool_call_id || m.tool_calls?.[0]?.id; groups.push({ index: i, group: 'tool', tab: id, messages: [m], length: 1 }); dialogs[id] = 0; }
+                        }
+                    });
+                    return groups;
+                });
+                return { dialogs, groupMessages };
+            }
+        };
+
+        // Inference engine
+        const createCompletion = async (rawconversation) => {
+            const chatbotStore = useChatbotStore();
+            const messageStore = useMessageStore();
+            const conversation = rawconversation.reduce((acc, item) => {
+                if (item.role === "assistant") { const { reasoning_content, ...rest } = item; acc.push(rest); }
+                else acc.push(item);
+                return acc;
+            }, []);
+            try {
+                messageStore.generating = true;
+                const headers = { "Content-Type": chatbotStore.contentType };
+                if (chatbotStore.apiKey) headers.Authorization = `${chatbotStore.authPrefix} ${chatbotStore.apiKey}`;
+                const body = { messages: useAgentStore().promptMessage(conversation), model: chatbotStore.model, conversation_id: chatbotStore.conversation_id, stream: chatbotStore.stream };
+                if (chatbotStore.max_tokens_value) body[chatbotStore.max_tokens_type] = parseInt(chatbotStore.max_tokens_value);
+                if (typeof chatbotStore.reasoning_effort === 'string') {
+                    if (chatbotStore.reasoning_effort === 'false') body['chat_template_kwargs'] = { enable_thinking: false };
+                    else body['reasoning_effort'] = chatbotStore.reasoning_effort;
+                }
+                if (chatbotStore.temperature) body["temperature"] = parseFloat(chatbotStore.temperature);
+                if (chatbotStore.top_p) body["top_p"] = parseFloat(chatbotStore.top_p);
+                if (chatbotStore.mcp) body["tools"] = await useMcpStore().listTools();
+
+                const completion = await fetch(chatbotStore.url + (chatbotStore.path || ''), { headers, method: chatbotStore.method, body: JSON.stringify(body) });
+                if (!completion.ok) {
+                    const err = await completion.json();
+                    useSnackbarStore().showErrorMessage(`${completion.status}: ${err.error?.message || err.detail?.[0]?.msg || completion.statusText}`);
+                    return;
+                }
+                const reader = completion.body?.getReader();
+                if (!reader) return useSnackbarStore().showErrorMessage('Stream fail');
+                messageStore.conversation.push({ content: "", reasoning_content: "", tool_calls: [], role: "assistant" });
+                await read(reader, messageStore.conversation.at(-1), '', chatbotStore.stream);
+            } catch (error) { useSnackbarStore().showErrorMessage(error.message); }
+            finally { messageStore.generating = false; }
+        };
+
+        const read = async (reader, target, buffer, stream) => {
+            const { done, value } = await reader.read();
+            if (done || !useMessageStore().generating) { useMessageStore().generating = false; return reader.releaseLock(); }
+            const chunks = new TextDecoder().decode(value);
+            if (stream) {
+                let parts = chunks.split('\n');
+                if (parts.length === 1) return read(reader, target, buffer + parts[0], stream);
+                if (buffer.length > 0) { parts[0] = buffer + parts[0]; buffer = ''; }
+                const last = parts[parts.length - 1];
+                if (last) buffer = parts.pop();
+                parts.map(l => l.trim()).filter(l => l.startsWith('data:')).forEach(l => {
+                    const c = l.substring(5).trim();
+                    if (c && c !== "[DONE]") parseJson(c, target);
+                });
+            } else parseJson(chunks, target);
+            return read(reader, target, buffer, stream);
+        };
+
+        const parseJson = (content, target) => { try { parseChoices(JSON.parse(content), target); } catch (e) { parseChoice(content, target); } };
+        const parseChoices = (parsed, target) => {
+            if ('choices' in parsed) parsed.choices.forEach(c => parseChoice(c.delta || c.message, target));
+            else parseChoice(parsed.response || parsed, target);
+        };
+        const parseChoice = (choice, target) => {
+            if (choice && target.role == 'assistant') {
+                if (typeof choice === 'string') target.content += choice;
+                else {
+                    if (choice.content) target.content += choice.content;
+                    if (choice.reasoning_content) target.reasoning_content += choice.reasoning_content;
+                }
+                parseTool(choice.tool_calls, target);
+            }
+        };
+        const parseTool = (tools, target) => {
+            if (tools) tools.forEach(t => {
+                const last = target.tool_calls.at(-1);
+                if (last && (!t.id || last.id == t.id)) { for (const k in t.function) { if (t.function[k]) last.function[k] = (last.function[k] || '') + t.function[k]; } }
+                else target.tool_calls.push(t);
+            });
+        };
+
+        const resetALL = () => { useHistoryStore().resetState(); useChatbotStore().resetState(); useDefaultChoiceStore().resetState(); };
+
+        // App setup
+        const app = createApp({
+            components: { vuedraggable, TuuiChatBox, TuuiChatCard },
+            setup() {
+                const snackbarStore = useSnackbarStore();
+                const mcpStore = useMcpStore();
+                const agentStore = useAgentStore();
+                const settingStore = useSettingStore();
+                const promptStore = usePromptStore();
+                const resourceStore = useResourceStore();
+                const chatbotStore = useChatbotStore();
+                const messageStore = useMessageStore();
+                const historyStore = useHistoryStore();
+                const defaultChoiceStore = useDefaultChoiceStore();
+                const languageStore = useLanguageStore();
+
+                const drawer = ref(true);
+                const fileInput = ref(null);
+                const searchQuery = ref('');
+                const deleteDialog = ref(false);
+                const itemToDelete = ref(null);
+                const configFile = ref(null);
+
+                const confirmDelete = (i) => { itemToDelete.value = i; deleteDialog.value = true; };
+                const doDelete = () => { if (itemToDelete.value !== null) { historyStore.deleteById(itemToDelete.value); deleteDialog.value = false; itemToDelete.value = null; } };
+
+                const filteredConversations = computed(() => {
+                    if (!searchQuery.value) return historyStore.conversation;
+                    const q = searchQuery.value.toLowerCase();
+                    return historyStore.conversation.filter(c => {
+                        const title = (c.history[0]?.content[1]?.text || c.history[0]?.content || "").toLowerCase();
+                        return title.includes(q);
+                    });
+                });
+
+                watch(computed(() => messageStore.conversation.at(-1)?.content), () => asyncScrollToBottom(), { deep: true });
+                watch(computed(() => messageStore.images), (val) => {
+                    if (val.length === 0) messageStore.base64 = '';
+                    else {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const img = new Image();
+                            img.onload = () => {
+                                const canvas = document.createElement('canvas');
+                                const ctx = canvas.getContext('2d');
+                                canvas.width = img.width; canvas.height = img.height;
+                                ctx.drawImage(img, 0, 0);
+                                messageStore.base64 = canvas.toDataURL('image/jpeg', 0.8);
+                            };
+                            img.src = e.target.result;
+                        };
+                        reader.readAsDataURL(val);
+                    }
+                });
+
+                watch(configFile, (val) => {
+                    if (val) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => { try { const json = JSON.parse(e.target.result); chatbotStore.updateStoreFromJSON(json.chatbotStore); defaultChoiceStore.updateStoreFromJSON(json.defaultChoiceStore); } catch { snackbarStore.showErrorMessage('Parse Fail'); } };
+                        reader.readAsText(val);
+                    }
+                });
+
+                watch(computed(() => agentStore.card?.refFile), (val) => {
+                    if (!val) { agentStore.card.refText = ""; return; }
+                    const reader = new FileReader();
+                    if (val.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+                        reader.onload = (e) => mammoth.extractRawText({ arrayBuffer: e.target.result }).then(r => { agentStore.card.refText = r.value });
+                        reader.readAsArrayBuffer(val);
+                    } else { reader.onload = (e) => { agentStore.card.refText = e.target.result }; reader.readAsText(val); }
+                }, { deep: true });
+
+                onMounted(() => {
+                    initLottie();
+                    agentStore.initAgent();
+                    const resize = () => { settingStore.avatarSize = window.innerWidth <= 1279 ? 26 : 36; };
+                    resize(); window.onresize = resize;
+                });
+
+                return {
+                    configFile, settingStore, promptStore, resourceStore, agentStore, snackbarStore, mcpStore, messageStore, defaultChoiceStore, chatbotStore, historyStore, languageStore,
+                    drawer, fileInput, searchQuery, filteredConversations, deleteDialog, confirmDelete, doDelete, triggerFileInput: () => fileInput.value?.click(), onFileChange: (e) => { if (e.target.files[0]) messageStore.images = e.target.files[0]; }, resetALL
+                };
+            }
+        });
+
+        app.use(i18n); app.use(vuetify); app.use(pinia); app.use(MdEditorV3.MdPreview);
+        app.mount('#app');
     </script>
 </body>
 
