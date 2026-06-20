@@ -117,13 +117,8 @@ class MainActivity : AppCompatActivity() {
             testServer()
         }
         
-        binding.selectModelButton.setOnClickListener {
-            if (isServerRunning()) {
-                // If server is running, stop it first before allowing model change
-                changeModel()
-            } else {
-                selectModelFile()
-            }
+        binding.manageModelsButton.setOnClickListener {
+            openModelManagement()
         }
         
         binding.viewLogsButton.setOnClickListener {
@@ -140,6 +135,10 @@ class MainActivity : AppCompatActivity() {
         
         binding.settingsButton.setOnClickListener {
             openSettings()
+        }
+        
+        binding.openInBrowserButton.setOnClickListener {
+            openUrlInBrowser()
         }
         
         binding.exitButton.setOnClickListener {
@@ -282,33 +281,25 @@ class MainActivity : AppCompatActivity() {
             binding.serverStatusText.text = getString(R.string.server_running)
             binding.serverStatusText.setTextColor(ContextCompat.getColor(this, R.color.success))
             binding.startStopButton.text = getString(R.string.stop_server)
+            binding.startStopButton.setIconResource(0) // Clear icon if any
             
             val ipAddress = getLocalIpAddress()
             val port = apiServerService?.getServerPort() ?: ApiServerService.DEFAULT_PORT
             val serverUrl = "http://$ipAddress:$port"
             
-            binding.serverUrlDivider.visibility = View.VISIBLE
-            binding.serverUrlLabel.visibility = View.VISIBLE
-            binding.serverUrlText.visibility = View.VISIBLE
+            binding.serverInfoLayout.visibility = View.VISIBLE
             binding.serverUrlText.text = serverUrl
-            binding.copyUrlButton.visibility = View.VISIBLE
             binding.testServerButton.visibility = View.VISIBLE
             
             val model = apiServerService?.getLoadedModel()
             val modelName = model?.getModelName() ?: "Unknown"
             binding.modelStatusText.text = getString(R.string.model_loaded, modelName)
-            // Enable the button to allow changing model while running
-            binding.selectModelButton.isEnabled = true
-            binding.selectModelButton.text = getString(R.string.change_model)
         } else {
             binding.serverStatusText.text = getString(R.string.server_stopped)
             binding.serverStatusText.setTextColor(ContextCompat.getColor(this, R.color.error))
             binding.startStopButton.text = getString(R.string.start_server)
             
-            binding.serverUrlDivider.visibility = View.GONE
-            binding.serverUrlLabel.visibility = View.GONE
-            binding.serverUrlText.visibility = View.GONE
-            binding.copyUrlButton.visibility = View.GONE
+            binding.serverInfoLayout.visibility = View.GONE
             binding.testServerButton.visibility = View.GONE
             
             if (selectedModelName != null) {
@@ -316,8 +307,14 @@ class MainActivity : AppCompatActivity() {
             } else {
                 binding.modelStatusText.text = getString(R.string.no_model_selected)
             }
-            binding.selectModelButton.isEnabled = true
-            binding.selectModelButton.text = getString(R.string.select_model)
+        }
+    }
+    
+    private fun openUrlInBrowser() {
+        val url = binding.serverUrlText.text.toString()
+        if (url.isNotEmpty()) {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)
         }
     }
     

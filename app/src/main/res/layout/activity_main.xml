@@ -32,51 +32,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp"
-            android:clipToPadding="false">
+            android:padding="20dp">
 
+            <!-- Primary Status Card -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/statusCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/Widget.Material3.CardView.Filled"
-                app:cardBackgroundColor="?attr/colorPrimaryContainer"
-                android:stateListAnimator="@null">
+                style="@style/Widget.Material3.CardView.Elevated"
+                app:cardElevation="2dp"
+                android:layout_marginBottom="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="24dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-                        
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/server_status"
-                            android:textAllCaps="true"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:textColor="?attr/colorOnPrimaryContainer"
-                            android:alpha="0.7" />
-
-                        </LinearLayout>
+                    android:padding="24dp"
+                    android:gravity="center">
 
                     <TextView
                         android:id="@+id/serverStatusText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/server_stopped"
-                        android:textSize="34sp"
+                        android:textSize="32sp"
                         android:textStyle="bold"
-                        android:textColor="?attr/colorOnPrimaryContainer"
-                        android:layout_marginTop="4dp" />
+                        android:textColor="@color/error" />
 
                     <TextView
                         android:id="@+id/modelStatusText"
@@ -84,147 +65,134 @@
                         android:layout_height="wrap_content"
                         android:text="@string/model_not_loaded"
                         android:textSize="14sp"
-                        android:textColor="?attr/colorOnPrimaryContainer"
-                        android:alpha="0.9"
-                        android:layout_marginTop="8dp" />
-
-                    <View
-                        android:id="@+id/serverUrlDivider"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginBottom="16dp"
-                        android:background="?attr/colorOnPrimaryContainer"
-                        android:alpha="0.2"
-                        android:visibility="gone" />
-
-                    <TextView
-                        android:id="@+id/serverUrlLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Server URL"
-                        android:textSize="12sp"
-                        android:textAllCaps="true"
-                        android:textStyle="bold"
-                        android:textColor="?attr/colorOnPrimaryContainer"
+                        android:layout_marginTop="8dp"
                         android:alpha="0.7"
-                        android:visibility="gone" />
+                        android:textAlignment="center" />
 
-                    <TextView
-                        android:id="@+id/serverUrlText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=""
-                        android:textSize="16sp"
-                        android:textColor="?attr/colorOnPrimaryContainer"
-                        android:layout_marginTop="4dp"
-                        android:visibility="gone" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/copyUrlButton"
+                    <LinearLayout
+                        android:id="@+id/serverInfoLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Copy URL"
-                        android:layout_marginTop="8dp"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:visibility="gone" />
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:layout_marginTop="16dp"
+                        android:visibility="gone">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/selectModelButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/select_model"
-                        android:layout_marginTop="8dp"
-                        style="@style/Widget.Material3.Button.OutlinedButton" />
+                        <View
+                            android:layout_width="40dp"
+                            android:layout_height="1dp"
+                            android:background="?attr/dividerHorizontal"
+                            android:layout_marginBottom="16dp" />
+
+                        <TextView
+                            android:id="@+id/serverUrlText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="http://192.168.1.1:8080"
+                            android:textSize="18sp"
+                            android:fontFamily="monospace"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="12dp">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/copyUrlButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Copy"
+                                app:icon="@drawable/ic_launcher_foreground"
+                                style="@style/Widget.Material3.Button.TextButton"
+                                android:minWidth="0dp"
+                                android:paddingStart="12dp"
+                                android:paddingEnd="12dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/openInBrowserButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Open Browser"
+                                style="@style/Widget.Material3.Button.TextButton"
+                                android:layout_marginStart="8dp"
+                                android:minWidth="0dp"
+                                android:paddingStart="12dp"
+                                android:paddingEnd="12dp" />
+                        </LinearLayout>
+                    </LinearLayout>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/startStopButton"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="64dp"
                         android:text="@string/start_server"
-                        android:layout_marginTop="20dp"
-                        style="@style/Widget.Material3.Button"
-                        app:backgroundTint="?attr/colorPrimary"
-                        app:rippleColor="?attr/colorOnPrimary" />
-                        
+                        android:layout_marginTop="24dp"
+                        android:textSize="18sp"
+                        app:cornerRadius="16dp" />
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Quick Actions -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Dashboard"
-                android:textSize="18sp"
+                android:text="Management"
+                android:textSize="14sp"
                 android:textStyle="bold"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="16dp" />
+                android:textAllCaps="true"
+                android:alpha="0.5"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="8dp" />
 
-            <LinearLayout
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/manageModelsButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:baselineAligned="false">
+                android:text="@string/manage_models"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_marginBottom="8dp"
+                app:icon="@drawable/ic_launcher_foreground" />
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:paddingEnd="8dp">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/settingsButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_marginBottom="8dp" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/manageModelsButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:text="@string/manage_models"
-                        android:gravity="center"
-                        style="@style/Widget.HostAI.Button.Grid" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/viewLogsButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/view_logs"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_marginBottom="8dp" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/viewLogsButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:text="@string/view_logs"
-                        android:gravity="center"
-                        android:layout_marginTop="16dp"
-                        style="@style/Widget.HostAI.Button.Grid" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/manageCompletionsButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/manage_completions"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_marginBottom="8dp" />
 
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:paddingStart="8dp">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/manageCompletionsButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:text="@string/manage_completions"
-                        android:gravity="center"
-                        style="@style/Widget.HostAI.Button.Grid" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/settingsButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:text="@string/settings"
-                        android:gravity="center"
-                        android:layout_marginTop="16dp"
-                        style="@style/Widget.HostAI.Button.Grid" />
-
-                </LinearLayout>
-            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/dividerHorizontal"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/testServerButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/test_server"
-                android:layout_marginTop="16dp"
-                style="@style/Widget.Material3.Button.OutlinedButton" />
+                style="@style/Widget.Material3.Button.TextButton" />
                 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/exitButton"
@@ -232,8 +200,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/exit_app"
                 style="@style/Widget.Material3.Button.TextButton"
-                android:textColor="@color/error"
-                android:layout_marginTop="8dp" />
+                android:textColor="@color/error" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
