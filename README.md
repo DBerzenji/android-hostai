@@ -96,9 +96,11 @@ You can manually trigger the workflow from the Actions tab in GitHub to build ar
 The easiest way to interact with your model is through the built-in web chat interface:
 
 1. After starting the server, open a web browser on any device on the same network
-2. Navigate to `http://<phone-ip>:8080/chat`
+2. Navigate to `http://<phone-ip>:8080` (or `http://<phone-ip>:8080/chat`)
 3. The chat interface will automatically connect to your local API
 4. Start chatting with your model!
+
+For API documentation and server status, navigate to `http://<phone-ip>:8080/settings`.
 
 The chat UI is powered by [AI-QL/chat-ui](https://github.com/AI-QL/chat-ui) and comes pre-configured to work with your local API endpoint. It supports:
 - Real-time streaming responses

@@ -917,4 +917,5 @@ If an error occurs, the API returns a JSON response with error details:
 
 ## Browser Access
 
-You can also open `http://<phone-ip>:8080` in a web browser to see a simple web interface with endpoint documentation.
+You can open `http://<phone-ip>:8080` in a web browser to access the Web Chat UI.
+For endpoint documentation and server information, navigate to `http://<phone-ip>:8080/settings`.

@@ -120,8 +120,9 @@ class OpenAIApiServer(
                 post("/v1/chat/completions/{completion_id}") { ctx -> handleUpdateStoredCompletion(ctx) }
                 
                 // UI endpoints
-                get("/") { ctx -> handleRoot(ctx) }
+                get("/") { ctx -> handleChatUI(ctx) }
                 get("/chat") { ctx -> handleChatUI(ctx) }
+                get("/settings") { ctx -> handleSettings(ctx) }
                 get("/assets/{fileName}") { ctx -> handleAssets(ctx) }
                 
                 // Exception handler
@@ -246,8 +247,8 @@ class OpenAIApiServer(
         ctx.contentType("application/json").result(gson.toJson(models))
     }
     
-    private fun handleRoot(ctx: JavalinContext) {
-        LogManager.d(TAG, "Handling /")
+    private fun handleSettings(ctx: JavalinContext) {
+        LogManager.d(TAG, "Handling /settings")
         
         val html = """
             <!DOCTYPE html>
@@ -265,7 +266,7 @@ class OpenAIApiServer(
             <body>
                 <h1>HostAI - OpenAI Compatible API Server</h1>
                 <p>Server is running on port $port</p>
-                <a href="/chat" class="chat-link">Open Chat UI</a>
+                <a href="/" class="chat-link">Open Chat UI</a>
                 <h2>Available Endpoints:</h2>
                 <div class="endpoint">
                     <strong>GET /v1/models</strong><br>
@@ -297,8 +298,12 @@ class OpenAIApiServer(
                     Health check endpoint
                 </div>
                 <div class="endpoint">
-                    <strong>GET /chat</strong><br>
+                    <strong>GET /</strong><br>
                     Web-based chat interface
+                </div>
+                <div class="endpoint">
+                    <strong>GET /settings</strong><br>
+                    API server information and documentation
                 </div>
             </body>
             </html>

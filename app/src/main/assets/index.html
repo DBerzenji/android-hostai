@@ -462,188 +462,212 @@
 
             </v-dialog>
             <!-- dialog -->
-            <v-dialog v-model="settingStore.configDialog" class="dialog-card">
+            <v-dialog v-model="settingStore.configDialog" class="dialog-card" scrollable>
                 <v-card prepend-icon="mdi-cog-outline" :title="$t('$vuetify.dataIterator.i.title')">
-                    <template v-slot:append>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="error" icon="mdi-refresh" @click="chatbotStore.resetState"></v-btn>
-                        </v-card-actions>
-                    </template>
+                    <v-tabs v-model="settingStore.configTab" color="primary">
+                        <v-tab value="config" text="Configuration"></v-tab>
+                        <v-tab value="endpoints" text="Endpoints"></v-tab>
+                    </v-tabs>
+                    <v-divider></v-divider>
 
-                    <v-card-text class="pb-0">
-                        <!-- ---------------------------------------------- -->
-                        <!-- APIKEY -->
-                        <!-- ---------------------------------------------- -->
-                        <v-text-field density='compact' color="primary" variant="outlined"
-                            :append-inner-icon="settingStore.apiKeyShow ? 'mdi-eye-off' : 'mdi-eye'"
-                            :type="settingStore.apiKeyShow ? 'text' : 'password'" v-model="chatbotStore.apiKey"
-                            class="px-2 mb-4" :label="$t('$vuetify.dataIterator.i.apikey')" prepend-inner-icon="mdi-key"
-                            clearable hide-details
-                            @click:append-inner="settingStore.apiKeyShow = !settingStore.apiKeyShow"></v-text-field>
+                    <v-tabs-window v-model="settingStore.configTab">
+                        <v-tabs-window-item value="config">
+                            <v-card-text class="pb-0">
+                                <!-- ---------------------------------------------- -->
+                                <!-- APIKEY -->
+                                <!-- ---------------------------------------------- -->
+                                <v-text-field density='compact' color="primary" variant="outlined"
+                                    :append-inner-icon="settingStore.apiKeyShow ? 'mdi-eye-off' : 'mdi-eye'"
+                                    :type="settingStore.apiKeyShow ? 'text' : 'password'" v-model="chatbotStore.apiKey"
+                                    class="px-2 mb-4" :label="$t('$vuetify.dataIterator.i.apikey')" prepend-inner-icon="mdi-key"
+                                    clearable hide-details
+                                    @click:append-inner="settingStore.apiKeyShow = !settingStore.apiKeyShow"></v-text-field>
 
-                        <v-expansion-panels static tile variant="accordion" class="px-2 mb-4">
-                            <v-expansion-panel>
-                                <v-expansion-panel-title v-slot="{ expanded }">
-                                    <v-icon icon="mdi-web" start></v-icon>
-                                    <v-row no-gutters class="hidden">
-                                        <span v-if="expanded">{{$t('$vuetify.dataIterator.i.endpoint')}}</span>
-                                        <span v-else>
-                                            <v-chip label color="primary" class="ma-1">
-                                                {{chatbotStore.url}}{{chatbotStore.path}}
-                                            </v-chip>
+                                <v-expansion-panels static tile variant="accordion" class="px-2 mb-4">
+                                    <v-expansion-panel>
+                                        <v-expansion-panel-title v-slot="{ expanded }">
+                                            <v-icon icon="mdi-web" start></v-icon>
+                                            <v-row no-gutters class="hidden">
+                                                <span v-if="expanded">{{$t('$vuetify.dataIterator.i.endpoint')}}</span>
+                                                <span v-else>
+                                                    <v-chip label color="primary" class="ma-1">
+                                                        {{chatbotStore.url}}{{chatbotStore.path}}
+                                                    </v-chip>
 
-                                            <v-chip label color="primary" class="ma-1">
-                                                {{chatbotStore.model || "No model" }}
-                                            </v-chip>
+                                                    <v-chip label color="primary" class="ma-1">
+                                                        {{chatbotStore.model || "No model" }}
+                                                    </v-chip>
 
-                                            <v-chip label color="primary" class="ma-1">
-                                                {{chatbotStore.conversation_id}}
-                                            </v-chip>
-                                        </span>
-                                    </v-row>
-                                </v-expansion-panel-title>
+                                                    <v-chip label color="primary" class="ma-1">
+                                                        {{chatbotStore.conversation_id}}
+                                                    </v-chip>
+                                                </span>
+                                            </v-row>
+                                        </v-expansion-panel-title>
 
-                                <v-expansion-panel-text>
-                                    <!-- ---------------------------------------------- -->
-                                    <!-- URL -->
-                                    <!-- ---------------------------------------------- -->
-                                    <v-combobox density='compact' class="px-2"
-                                        :label="$t('$vuetify.dataIterator.i.url')" :items="defaultChoiceStore.url"
-                                        v-model="chatbotStore.url" variant="outlined">
-                                    </v-combobox>
+                                        <v-expansion-panel-text>
+                                            <!-- ---------------------------------------------- -->
+                                            <!-- URL -->
+                                            <!-- ---------------------------------------------- -->
+                                            <v-combobox density='compact' class="px-2"
+                                                :label="$t('$vuetify.dataIterator.i.url')" :items="defaultChoiceStore.url"
+                                                v-model="chatbotStore.url" variant="outlined">
+                                            </v-combobox>
 
-                                    <!-- ---------------------------------------------- -->
-                                    <!-- Path -->
-                                    <!-- ---------------------------------------------- -->
-                                    <v-combobox density='compact' class="px-2"
-                                        :label="$t('$vuetify.dataIterator.i.path')" :items="defaultChoiceStore.path"
-                                        v-model="chatbotStore.path" variant="outlined">
-                                    </v-combobox>
+                                            <!-- ---------------------------------------------- -->
+                                            <!-- Path -->
+                                            <!-- ---------------------------------------------- -->
+                                            <v-combobox density='compact' class="px-2"
+                                                :label="$t('$vuetify.dataIterator.i.path')" :items="defaultChoiceStore.path"
+                                                v-model="chatbotStore.path" variant="outlined">
+                                            </v-combobox>
 
-                                    <!-- ---------------------------------------------- -->
-                                    <!-- Model -->
-                                    <!-- ---------------------------------------------- -->
-                                    <v-combobox density='compact' class="px-2"
-                                        :label="$t('$vuetify.dataIterator.i.model')" :items="defaultChoiceStore.model"
-                                        v-model="chatbotStore.model" variant="outlined">
-                                    </v-combobox>
+                                            <!-- ---------------------------------------------- -->
+                                            <!-- Model -->
+                                            <!-- ---------------------------------------------- -->
+                                            <v-combobox density='compact' class="px-2"
+                                                :label="$t('$vuetify.dataIterator.i.model')" :items="defaultChoiceStore.model"
+                                                v-model="chatbotStore.model" variant="outlined">
+                                            </v-combobox>
 
-                                    <!-- ---------------------------------------------- -->
-                                    <!-- Conversation ID -->
-                                    <!-- ---------------------------------------------- -->
-                                    <v-text-field density='compact' class="px-2"
-                                        :label="$t('$vuetify.dataIterator.i.conversationId')"
-                                        v-model="chatbotStore.conversation_id" variant="outlined"
-                                        :rules="[value => !!value || $t('$vuetify.dataIterator.validation.conversationIdRequired'), value => /^[a-zA-Z0-9\-_.@]+$/.test(value) || $t('$vuetify.dataIterator.validation.conversationIdInvalid')]">
-                                    </v-text-field>
-                                </v-expansion-panel-text>
-                            </v-expansion-panel>
+                                            <!-- ---------------------------------------------- -->
+                                            <!-- Conversation ID -->
+                                            <!-- ---------------------------------------------- -->
+                                            <v-text-field density='compact' class="px-2"
+                                                :label="$t('$vuetify.dataIterator.i.conversationId')"
+                                                v-model="chatbotStore.conversation_id" variant="outlined"
+                                                :rules="[value => !!value || $t('$vuetify.dataIterator.validation.conversationIdRequired'), value => /^[a-zA-Z0-9\-_.@]+$/.test(value) || $t('$vuetify.dataIterator.validation.conversationIdInvalid')]">
+                                            </v-text-field>
+                                        </v-expansion-panel-text>
+                                    </v-expansion-panel>
 
-                            <v-expansion-panel>
-                                <v-expansion-panel-title v-slot="{ expanded }">
-                                    <v-icon icon="mdi-account-key" start></v-icon>
-                                    <v-row no-gutters class="hidden">
-                                        <span v-if="expanded">{{ $t('$vuetify.dataIterator.i.advanced') }}</span>
-                                        <span v-else>
-                                            <v-chip label color="primary" class="ma-1">
-                                                {{ chatbotStore.stream ? "Stream" : "Stream: off" }}
-                                            </v-chip>
-                                            <v-chip label color="primary" class="ma-1">
-                                                {{ chatbotStore.mcp ? "MCP" : "MCP: off" }}
-                                            </v-chip>
-                                            <v-chip label color="primary" class="ma-1">
-                                                {{chatbotStore.max_tokens_type}}
-                                                {{": "}}
-                                                {{ chatbotStore.max_tokens_value ? chatbotStore.max_tokens_value :
-                                                "default" }}
-                                            </v-chip>
-                                            <v-chip label color="primary" class="ma-1">
-                                                {{"temperature: "}}
-                                                {{ chatbotStore.temperature ? chatbotStore.temperature :
-                                                "default" }}
-                                            </v-chip>
-                                            <v-chip label color="primary" class="ma-1">
-                                                {{"top_p: "}}
-                                                {{ chatbotStore.top_p ? chatbotStore.top_p :
-                                                "default" }}
-                                            </v-chip>
-                                            <v-chip label color="primary" class="ma-1">
-                                                {{ chatbotStore.authPrefix }}
-                                            </v-chip>
-                                            <v-chip label color="primary" class="ma-1">
-                                                {{ chatbotStore.contentType }}
-                                            </v-chip>
-                                        </span>
-                                    </v-row>
-                                </v-expansion-panel-title>
+                                    <v-expansion-panel>
+                                        <v-expansion-panel-title v-slot="{ expanded }">
+                                            <v-icon icon="mdi-account-key" start></v-icon>
+                                            <v-row no-gutters class="hidden">
+                                                <span v-if="expanded">{{ $t('$vuetify.dataIterator.i.advanced') }}</span>
+                                                <span v-else>
+                                                    <v-chip label color="primary" class="ma-1">
+                                                        {{ chatbotStore.stream ? "Stream" : "Stream: off" }}
+                                                    </v-chip>
+                                                    <v-chip label color="primary" class="ma-1">
+                                                        {{ chatbotStore.mcp ? "MCP" : "MCP: off" }}
+                                                    </v-chip>
+                                                    <v-chip label color="primary" class="ma-1">
+                                                        {{chatbotStore.max_tokens_type}}
+                                                        {{": "}}
+                                                        {{ chatbotStore.max_tokens_value ? chatbotStore.max_tokens_value :
+                                                        "default" }}
+                                                    </v-chip>
+                                                    <v-chip label color="primary" class="ma-1">
+                                                        {{"temperature: "}}
+                                                        {{ chatbotStore.temperature ? chatbotStore.temperature :
+                                                        "default" }}
+                                                    </v-chip>
+                                                    <v-chip label color="primary" class="ma-1">
+                                                        {{"top_p: "}}
+                                                        {{ chatbotStore.top_p ? chatbotStore.top_p :
+                                                        "default" }}
+                                                    </v-chip>
+                                                    <v-chip label color="primary" class="ma-1">
+                                                        {{ chatbotStore.authPrefix }}
+                                                    </v-chip>
+                                                    <v-chip label color="primary" class="ma-1">
+                                                        {{ chatbotStore.contentType }}
+                                                    </v-chip>
+                                                </span>
+                                            </v-row>
+                                        </v-expansion-panel-title>
 
-                                <v-expansion-panel-text>
-                                    <v-row class="px-3 mt-2 mr-2">
+                                        <v-expansion-panel-text>
+                                            <v-row class="px-3 mt-2 mr-2">
 
-                                        <v-combobox class="px-2" density='compact'
-                                            :label="$t('$vuetify.dataIterator.i.reasoning')"
-                                            v-model="chatbotStore.reasoning_effort" clearable
-                                            :items="defaultChoiceStore.reasoning_efforts" variant="outlined">
-                                        </v-combobox>
-                                        <v-spacer></v-spacer>
-                                        <v-checkbox v-model="chatbotStore.stream"
-                                            :label="$t('$vuetify.dataIterator.i.stream')" density='compact'
-                                            color="primary">
-                                        </v-checkbox>
-                                        <v-checkbox v-if="mcpStore.getServers" v-model="chatbotStore.mcp"
-                                            :label="$t('$vuetify.dataIterator.i.mcp')" density='compact'
-                                            color="primary">
-                                        </v-checkbox>
-                                    </v-row>
-                                    <v-row class="px-3 mt-4 mb-0">
-                                        <v-combobox class="px-2" density='compact'
-                                            :label="$t('$vuetify.dataIterator.i.maxTokensPrefix')"
-                                            :items="defaultChoiceStore.max_tokens_type"
-                                            v-model="chatbotStore.max_tokens_type" variant="outlined">
-                                        </v-combobox>
-                                        <v-combobox class="px-2" density='compact' label="MaxTokenValue"
-                                            v-model="chatbotStore.max_tokens_value" type='number' single-line
-                                            variant="outlined">
-                                        </v-combobox>
-                                    </v-row>
-                                    <v-row class="px-3 mt-0 mb-0">
-                                        <v-combobox class="px-2" density='compact'
-                                            :label="$t('$vuetify.dataIterator.i.temperature')"
-                                            :items="defaultChoiceStore.temperature" type='number'
-                                            v-model="chatbotStore.temperature" variant="outlined"
-                                            :rules="[value => !isNaN(value) && parseFloat(value) >= 0 && parseFloat(value) <= 2]">
-                                        </v-combobox>
-                                        <v-combobox class="px-2" density='compact'
-                                            :label="$t('$vuetify.dataIterator.i.topP')" v-model="chatbotStore.top_p"
-                                            type='number' variant="outlined"
-                                            :rules="[value => !isNaN(value) && parseFloat(value) >= 0 && parseFloat(value) <= 1]">
-                                        </v-combobox>
-                                    </v-row>
-                                    <v-combobox class="px-2" density='compact'
-                                        :label="$t('$vuetify.dataIterator.i.contentType')"
-                                        v-model="chatbotStore.contentType" variant="outlined">
-                                    </v-combobox>
-                                    <v-combobox class="px-2" density='compact'
-                                        :label="$t('$vuetify.dataIterator.i.authPrefix')"
-                                        :items="defaultChoiceStore.authPrefix" v-model="chatbotStore.authPrefix"
-                                        variant="outlined">
-                                    </v-combobox>
-                                </v-expansion-panel-text>
-                            </v-expansion-panel>
-                        </v-expansion-panels>
+                                                <v-combobox class="px-2" density='compact'
+                                                    :label="$t('$vuetify.dataIterator.i.reasoning')"
+                                                    v-model="chatbotStore.reasoning_effort" clearable
+                                                    :items="defaultChoiceStore.reasoning_efforts" variant="outlined">
+                                                </v-combobox>
+                                                <v-spacer></v-spacer>
+                                                <v-checkbox v-model="chatbotStore.stream"
+                                                    :label="$t('$vuetify.dataIterator.i.stream')" density='compact'
+                                                    color="primary">
+                                                </v-checkbox>
+                                                <v-checkbox v-if="mcpStore.getServers" v-model="chatbotStore.mcp"
+                                                    :label="$t('$vuetify.dataIterator.i.mcp')" density='compact'
+                                                    color="primary">
+                                                </v-checkbox>
+                                            </v-row>
+                                            <v-row class="px-3 mt-4 mb-0">
+                                                <v-combobox class="px-2" density='compact'
+                                                    :label="$t('$vuetify.dataIterator.i.maxTokensPrefix')"
+                                                    :items="defaultChoiceStore.max_tokens_type"
+                                                    v-model="chatbotStore.max_tokens_type" variant="outlined">
+                                                </v-combobox>
+                                                <v-combobox class="px-2" density='compact' label="MaxTokenValue"
+                                                    v-model="chatbotStore.max_tokens_value" type='number' single-line
+                                                    variant="outlined">
+                                                </v-combobox>
+                                            </v-row>
+                                            <v-row class="px-3 mt-0 mb-0">
+                                                <v-combobox class="px-2" density='compact'
+                                                    :label="$t('$vuetify.dataIterator.i.temperature')"
+                                                    :items="defaultChoiceStore.temperature" type='number'
+                                                    v-model="chatbotStore.temperature" variant="outlined"
+                                                    :rules="[value => !isNaN(value) && parseFloat(value) >= 0 && parseFloat(value) <= 2]">
+                                                </v-combobox>
+                                                <v-combobox class="px-2" density='compact'
+                                                    :label="$t('$vuetify.dataIterator.i.topP')" v-model="chatbotStore.top_p"
+                                                    type='number' variant="outlined"
+                                                    :rules="[value => !isNaN(value) && parseFloat(value) >= 0 && parseFloat(value) <= 1]">
+                                                </v-combobox>
+                                            </v-row>
+                                            <v-combobox class="px-2" density='compact'
+                                                :label="$t('$vuetify.dataIterator.i.contentType')"
+                                                v-model="chatbotStore.contentType" variant="outlined">
+                                            </v-combobox>
+                                            <v-combobox class="px-2" density='compact'
+                                                :label="$t('$vuetify.dataIterator.i.authPrefix')"
+                                                :items="defaultChoiceStore.authPrefix" v-model="chatbotStore.authPrefix"
+                                                variant="outlined">
+                                            </v-combobox>
+                                        </v-expansion-panel-text>
+                                    </v-expansion-panel>
+                                </v-expansion-panels>
 
-                        <!-- Dialog Btn -->
-                        <v-card-actions>
-                            <v-file-input prepend-icon="" prepend-inner-icon="mdi-upload" class="mr-2"
-                                variant="outlined" v-model="configFile"
-                                :label="$t('$vuetify.dataIterator.i.configFile')" accept="application/json"
-                                single-line></v-file-input>
+                                <!-- Dialog Btn -->
+                                <v-card-actions>
+                                    <v-file-input prepend-icon="" prepend-inner-icon="mdi-upload" class="mr-2"
+                                        variant="outlined" v-model="configFile"
+                                        :label="$t('$vuetify.dataIterator.i.configFile')" accept="application/json"
+                                        single-line></v-file-input>
 
-                            <v-spacer></v-spacer>
-                            <v-btn variant="flat" color="primary" @click="settingStore.configDialog = false">OK</v-btn>
-                        </v-card-actions>
-                    </v-card-text>
+                                    <v-spacer></v-spacer>
+                                    <v-btn variant="flat" color="primary" @click="settingStore.configDialog = false">OK</v-btn>
+                                </v-card-actions>
+                            </v-card-text>
+                        </v-tabs-window-item>
+
+                        <v-tabs-window-item value="endpoints">
+                            <v-card-text>
+                                <div class="text-h6 mb-2">Available Endpoints</div>
+                                <v-list lines="two" bg-color="transparent">
+                                    <v-list-item v-for="ep in apiEndpoints" :key="ep.path" border class="mb-2 rounded">
+                                        <v-list-item-title class="font-weight-bold">
+                                            <v-chip size="small" :color="ep.method === 'GET' ? 'success' : 'primary'" class="mr-2">{{ ep.method }}</v-chip>
+                                            {{ ep.path }}
+                                        </v-list-item-title>
+                                        <v-list-item-subtitle class="mt-1">
+                                            {{ ep.description }}
+                                        </v-list-item-subtitle>
+                                    </v-list-item>
+                                </v-list>
+                                <v-divider class="my-4"></v-divider>
+                                <div class="text-caption text-center">
+                                    Server is running on port 8080
+                                </div>
+                            </v-card-text>
+                        </v-tabs-window-item>
+                    </v-tabs-window>
                 </v-card>
             </v-dialog>
             <v-dialog v-model="promptStore.promptDialog" class="dialog-card">
@@ -1429,9 +1453,9 @@
         });
 
         const useSettingStore = defineStore("settingStore", {
-            state: () => ({ inputRow: 1, avatarSize: 24, configDialog: false, configHistory: false, agentDialog: false, apiKeyShow: false, toolboxShow: false, fontStatus: false }),
+            state: () => ({ inputRow: 1, avatarSize: 24, configDialog: false, configHistory: false, agentDialog: false, apiKeyShow: false, toolboxShow: false, fontStatus: false, configTab: 'config' }),
             actions: {
-                initDialog() { this.apiKeyShow = false; this.configDialog = true; },
+                initDialog() { this.apiKeyShow = false; this.configDialog = true; this.configTab = 'config'; },
                 setInputRow(int, timeout) { setTimeout(() => { this.inputRow = int }, timeout); }
             },
         });
@@ -1746,6 +1770,18 @@
                 const itemToDelete = ref(null);
                 const configFile = ref(null);
 
+                const apiEndpoints = [
+                    { method: 'GET', path: '/v1/models', description: 'List available models' },
+                    { method: 'POST', path: '/v1/chat/completions', description: 'Chat completion endpoint (OpenAI compatible). Set store=true to persist completion for later retrieval.' },
+                    { method: 'GET', path: '/v1/chat/completions/{completion_id}', description: 'Get a stored chat completion' },
+                    { method: 'GET', path: '/v1/chat/completions/{completion_id}/messages', description: 'Get messages from a stored chat completion' },
+                    { method: 'POST', path: '/v1/chat/completions/{completion_id}', description: 'Update metadata for a stored chat completion' },
+                    { method: 'POST', path: '/v1/completions', description: 'Text completion endpoint (OpenAI compatible)' },
+                    { method: 'GET', path: '/health', description: 'Health check endpoint' },
+                    { method: 'GET', path: '/', description: 'Web-based chat interface' },
+                    { method: 'GET', path: '/settings', description: 'API server information and documentation' }
+                ];
+
                 const confirmDelete = (i) => { itemToDelete.value = i; deleteDialog.value = true; };
                 const doDelete = () => { if (itemToDelete.value !== null) { historyStore.deleteById(itemToDelete.value); deleteDialog.value = false; itemToDelete.value = null; } };
 
@@ -1804,7 +1840,7 @@
 
                 return {
                     configFile, settingStore, promptStore, resourceStore, agentStore, snackbarStore, mcpStore, messageStore, defaultChoiceStore, chatbotStore, historyStore, languageStore,
-                    drawer, fileInput, searchQuery, filteredConversations, deleteDialog, confirmDelete, doDelete, triggerFileInput: () => fileInput.value?.click(), onFileChange: (e) => { if (e.target.files[0]) messageStore.images = e.target.files[0]; }, resetALL
+                    drawer, fileInput, searchQuery, filteredConversations, deleteDialog, confirmDelete, doDelete, triggerFileInput: () => fileInput.value?.click(), onFileChange: (e) => { if (e.target.files[0]) messageStore.images = e.target.files[0]; }, resetALL, apiEndpoints
                 };
             }
         });
