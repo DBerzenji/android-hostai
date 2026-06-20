@@ -1730,7 +1730,7 @@
                 const defaultChoiceStore = useDefaultChoiceStore();
                 const languageStore = useLanguageStore();
 
-                const drawer = ref(true);
+                const drawer = ref(window.innerWidth > 1279);
                 const fileInput = ref(null);
                 const searchQuery = ref('');
                 const deleteDialog = ref(false);

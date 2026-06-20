@@ -104,12 +104,7 @@ class SettingsActivity : AppCompatActivity() {
     }
     
     private fun updateLogsCount() {
-        val count = requestLogger.getLogsCount()
-        if (count > 0) {
-            binding.logsCountText.text = getString(R.string.logs_recorded, count)
-        } else {
-            binding.logsCountText.text = getString(R.string.no_logs_recorded)
-        }
+        // Log count text removed from UI, but function kept for logic compatibility
     }
     
     private fun saveSettings() {

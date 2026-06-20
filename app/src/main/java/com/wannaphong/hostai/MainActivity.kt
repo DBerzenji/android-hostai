@@ -193,6 +193,19 @@ class MainActivity : AppCompatActivity() {
     private fun startServer() {
         LogManager.i("MainActivity", "User requested to start server")
         
+        // Safety check: Ensure a model is selected
+        if (selectedModelPath == null) {
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle("No Model Loaded")
+                .setMessage("Please select or add a LiteRT model file before starting the server.")
+                .setPositiveButton("Add Model") { _, _ ->
+                    selectModelFile()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+            return
+        }
+
         // Check for notification permission on Android 13+ (API 33+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             when {
