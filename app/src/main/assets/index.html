@@ -1,38 +1,5 @@
-<!--
-
-  @Component: Chatbot UI
-
-  @Github: https://github.com/AI-QL
-
-  @License: This project uses the following tools, each subject to its respective license restrictions.
-  Please refer to the license of each tool for detailed information:
-
-  - Vue3: https://github.com/vuejs
-  - Vuetify: https://github.com/vuetifyjs/vuetify
-  - Pinia: https://github.com/vuejs/pinia
-  - md-editor-v3: https://github.com/imzbf/md-editor-v3
-  - lottie-web: https://github.com/airbnb/lottie-web
-  - vuedraggable: https://github.com/SortableJS/vue.draggable.next
-  - mammoth: https://github.com/mwilliamson/mammoth.js
-
-   Copyright 2024 AIQL.COM
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
--->
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
 
 <head>
     <meta charset="UTF-8">
@@ -262,10 +229,9 @@
             opacity: 1;
         }
     </style>
-    <div id="loading" class="loading"></div>
 
     <!-- MDI -->
-    <link href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet" rel="preload">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet preload">
 
     <!-- Keep the order, vue should be the first -->
     <script src="https://cdn.jsdelivr.net/npm/vue@3.5.21/dist/vue.global.prod.min.js"></script>
@@ -306,6 +272,7 @@
 </head>
 
 <body>
+    <div id="loading" class="loading"></div>
     <div id="app" v-cloak>
         <v-app theme="dark">
             <v-navigation-drawer v-model="drawer" border="right" width="260" :temporary="$vuetify.display.mobile">

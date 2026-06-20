@@ -108,8 +108,8 @@ class SettingsManager(context: Context) {
     fun getBackend(): String {
         val stored = prefs.getString(KEY_BACKEND, null)
         if (stored != null) return stored
-        // Migrate legacy boolean setting: if GPU was enabled, default to GPU.
-        val legacyGpu = prefs.getBoolean(KEY_USE_GPU_BACKEND, false)
+        // Default to GPU if no setting is stored.
+        val legacyGpu = prefs.getBoolean(KEY_USE_GPU_BACKEND, true)
         return if (legacyGpu) BACKEND_GPU else BACKEND_CPU
     }
 
