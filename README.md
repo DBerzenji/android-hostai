@@ -1,3 +1,5 @@
+I forked this, and simply changed the index.html GUI to be more appealing to me. 
+
 # HostAI - Android LLM API Server
 
 An Android application that uses [LiteRT-LM](https://github.com/google-ai-edge/LiteRT-LM) to host an OpenAI-compatible API server, allowing you to run LLM models on your phone as a web service.
