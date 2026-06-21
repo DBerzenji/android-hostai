@@ -19,6 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
@@ -39,6 +40,25 @@ data class GenerationConfig(
     val topP: Double = 0.95,
     val seed: Int = -1,
     val extraContext: Map<String, Any>? = null  // Extra context for prompt template (from extra_body)
+)
+
+/**
+ * Statistics about a single generation/completion.
+ */
+data class GenerationStats(
+    val startTime: Long = 0,
+    val prefillEndTime: Long = 0,
+    val generationEndTime: Long = 0,
+    val inputTokens: Int = 0,
+    val outputTokens: Int = 0
+)
+
+/**
+ * Result of a generation containing the generated text and performance stats.
+ */
+data class GenerationResult(
+    val text: String,
+    val stats: GenerationStats
 )
 
 /**
@@ -366,13 +386,14 @@ class LlamaModel(
      * @param prompt The input prompt text
      * @param config Generation configuration with all parameters (optional)
      * @param sessionId Unused – kept for API compatibility
-     * @return Generated text
+     * @return GenerationResult containing generated text and stats
      */
-    fun generate(prompt: String, config: GenerationConfig = GenerationConfig(), sessionId: String = ""): String {
+    fun generate(prompt: String, config: GenerationConfig = GenerationConfig(), sessionId: String = ""): GenerationResult {
+        val startTime = System.currentTimeMillis()
         if (!isModelLoaded()) {
             val errorMsg = "Error: Model not loaded. Please load a model first."
             LogManager.e(TAG, errorMsg)
-            return errorMsg
+            return GenerationResult(errorMsg, GenerationStats(startTime = startTime))
         }
 
         LogManager.i(TAG, "Generating response with prompt (length: ${prompt.length})")
@@ -381,7 +402,12 @@ class LlamaModel(
         // For mock model, return a simple response
         if (modelPath == "mock-model") {
             val promptPreview = if (prompt.length > 50) prompt.take(50) + "..." else prompt
-            return "This is a mock response from the model. In production, this would be the actual LLM output for prompt: \"$promptPreview\""
+            val text = "This is a mock response from the model. In production, this would be the actual LLM output for prompt: \"$promptPreview\""
+            return GenerationResult(text, GenerationStats(
+                startTime = startTime,
+                prefillEndTime = startTime + 10,
+                generationEndTime = System.currentTimeMillis()
+            ))
         }
 
         // Borrow one engine from the pool (blocks only if all N engines are in use,
@@ -393,7 +419,7 @@ class LlamaModel(
             // Re-check after acquiring the engine: if close()/unload() raced ahead
             // and set isLoaded = false, bail out and return the engine immediately.
             if (!isLoaded) {
-                return "Error: Model not loaded. Please load a model first."
+                return GenerationResult("Error: Model not loaded. Please load a model first.", GenerationStats(startTime = startTime))
             }
 
             conversation = createConversation(eng, config)
@@ -401,19 +427,29 @@ class LlamaModel(
             if (conversation == null) {
                 val errorMsg = "Error: Failed to create conversation"
                 LogManager.e(TAG, errorMsg)
-                return errorMsg
+                return GenerationResult(errorMsg, GenerationStats(startTime = startTime))
             }
 
             // Send message and get response synchronously
             val userMessage = Message.user(prompt)
+            
+            // Note: LiteRT SDK sendMessage is synchronous and combines prefill and generation.
+            // We'll treat the point just before sendMessage as prefill start and just after as generation end.
+            val prefillEndTime = System.currentTimeMillis()
             val response = conversation.sendMessage(userMessage)
             val result = response.toString()
+            val endTime = System.currentTimeMillis()
+            
             LogManager.i(TAG, "Generation completed successfully (length: ${result.length})")
-            result
+            GenerationResult(result, GenerationStats(
+                startTime = startTime,
+                prefillEndTime = prefillEndTime,
+                generationEndTime = endTime
+            ))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to generate response", e)
             LogManager.e(TAG, "Failed to generate response: ${e.message}", e)
-            "Error: ${e.message}"
+            GenerationResult("Error: ${e.message}", GenerationStats(startTime = startTime))
         } finally {
             try { conversation?.close() } catch (e: Exception) {
                 LogManager.w(TAG, "Error closing conversation: ${e.message}")
@@ -427,13 +463,14 @@ class LlamaModel(
      * @param contents List of Content objects (text, images, audio)
      * @param config Generation configuration with all parameters (optional)
      * @param sessionId Unused – kept for API compatibility
-     * @return Generated text
+     * @return GenerationResult containing generated text and stats
      */
-    fun generateWithContents(contents: List<Content>, config: GenerationConfig = GenerationConfig(), sessionId: String = ""): String {
+    fun generateWithContents(contents: List<Content>, config: GenerationConfig = GenerationConfig(), sessionId: String = ""): GenerationResult {
+        val startTime = System.currentTimeMillis()
         if (!isModelLoaded()) {
             val errorMsg = "Error: Model not loaded. Please load a model first."
             LogManager.e(TAG, errorMsg)
-            return errorMsg
+            return GenerationResult(errorMsg, GenerationStats(startTime = startTime))
         }
 
         LogManager.i(TAG, "Generating multimodal response with ${contents.size} content parts")
@@ -441,14 +478,19 @@ class LlamaModel(
 
         // For mock model, return a simple response
         if (modelPath == "mock-model") {
-            return "This is a mock multimodal response from the model with ${contents.size} content parts."
+            val text = "This is a mock multimodal response from the model with ${contents.size} content parts."
+            return GenerationResult(text, GenerationStats(
+                startTime = startTime,
+                prefillEndTime = startTime + 10,
+                generationEndTime = System.currentTimeMillis()
+            ))
         }
 
         val eng = enginePool.take()
         var conversation: Conversation? = null
         return try {
             if (!isLoaded) {
-                return "Error: Model not loaded. Please load a model first."
+                return GenerationResult("Error: Model not loaded. Please load a model first.", GenerationStats(startTime = startTime))
             }
 
             conversation = createConversation(eng, config)
@@ -456,19 +498,26 @@ class LlamaModel(
             if (conversation == null) {
                 val errorMsg = "Error: Failed to create conversation"
                 LogManager.e(TAG, errorMsg)
-                return errorMsg
+                return GenerationResult(errorMsg, GenerationStats(startTime = startTime))
             }
 
             // Send message with multimodal contents and get response synchronously
             val userMessage = Message.user(Contents.of(contents))
+            val prefillEndTime = System.currentTimeMillis()
             val response = conversation.sendMessage(userMessage)
             val result = response.toString()
+            val endTime = System.currentTimeMillis()
+            
             LogManager.i(TAG, "Multimodal generation completed successfully (length: ${result.length})")
-            result
+            GenerationResult(result, GenerationStats(
+                startTime = startTime,
+                prefillEndTime = prefillEndTime,
+                generationEndTime = endTime
+            ))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to generate multimodal response", e)
             LogManager.e(TAG, "Failed to generate multimodal response: ${e.message}", e)
-            "Error: ${e.message}"
+            GenerationResult("Error: ${e.message}", GenerationStats(startTime = startTime))
         } finally {
             try { conversation?.close() } catch (e: Exception) {
                 LogManager.w(TAG, "Error closing conversation: ${e.message}")
@@ -483,7 +532,7 @@ class LlamaModel(
      */
     @Deprecated("Use generate(prompt, GenerationConfig) for full parameter control")
     fun generate(prompt: String, maxTokens: Int = 100, temperature: Float = 0.7f): String {
-        return generate(prompt, GenerationConfig(maxTokens = maxTokens, temperature = temperature.toDouble()))
+        return generate(prompt, GenerationConfig(maxTokens = maxTokens, temperature = temperature.toDouble())).text
     }
 
     /**
@@ -491,17 +540,18 @@ class LlamaModel(
      * @param prompt The input prompt text
      * @param config Generation configuration with all parameters (optional)
      * @param sessionId Unused – kept for API compatibility
-     * @param onToken Callback for each generated token
+     * @param onToken Callback for each generated token with optional stats
      * @return Job that can be cancelled, or null on error
      */
     fun generateStream(
         prompt: String,
         config: GenerationConfig = GenerationConfig(),
         sessionId: String = "",
-        onToken: (String) -> Unit
+        onToken: (String, GenerationStats?) -> Unit
     ): Job? {
+        val startTime = System.currentTimeMillis()
         if (!isModelLoaded()) {
-            onToken("Error: Model not loaded. Please load a model first.")
+            onToken("Error: Model not loaded. Please load a model first.", null)
             return null
         }
 
@@ -511,24 +561,23 @@ class LlamaModel(
         if (modelPath == "mock-model") {
             return scope.launch {
                 val mockResponse = "This is a mock streaming response from the model. "
-                onToken(mockResponse)
+                onToken(mockResponse, null)
+                try { delay(100) } catch (e: Exception) {}
+                onToken("", GenerationStats(
+                    startTime = startTime,
+                    prefillEndTime = startTime + 50,
+                    generationEndTime = System.currentTimeMillis()
+                ))
             }
         }
 
         return scope.launch {
-            // Borrow one engine from the pool.  The pool has exactly as many
-            // engines as the maxConcurrency setting, so this call blocks only
-            // when all engines are already in use.  In-flight conversations
-            // each hold a single engine slot and release it in the finally
-            // block below, guaranteeing forward progress.
+            // Borrow one engine from the pool.
             val eng = enginePool.take()
             var conversation: Conversation? = null
             try {
-                // Re-check after acquiring the engine: close()/unload() may have
-                // set isLoaded = false between the caller's isModelLoaded() check
-                // and this point.
                 if (!isLoaded) {
-                    onToken("Error: Model not loaded. Please load a model first.")
+                    onToken("Error: Model not loaded. Please load a model first.", null)
                     return@launch
                 }
 
@@ -536,36 +585,30 @@ class LlamaModel(
 
                 if (conversation == null) {
                     LogManager.e(TAG, "Failed to create conversation")
-                    onToken("Error: Failed to create conversation")
+                    onToken("Error: Failed to create conversation", null)
                     return@launch
                 }
 
                 // Use suspendCancellableCoroutine to bridge the async callback with coroutines.
                 suspendCancellableCoroutine<Unit> { continuation ->
                     val resumed = AtomicBoolean(false)
+                    var firstTokenReceived = false
+                    var prefillEndTime = 0L
 
                     val callback = object : MessageCallback {
                         override fun onMessage(message: Message) {
-                            // If the continuation was already resumed (e.g. the client
-                            // disconnected), skip further token delivery immediately.
-                            // This avoids redundant IOException throws and keeps the
-                            // native callback thread free.
                             if (resumed.get()) return
 
-                            // Emit each token chunk directly as it arrives from the engine.
-                            // No buffering or artificial delays — let the native engine pace output.
-                            // Wrap in try-catch: exceptions must never escape a JNI callback or
-                            // they will crash the native engine / the Android process.
+                            if (!firstTokenReceived) {
+                                firstTokenReceived = true
+                                prefillEndTime = System.currentTimeMillis()
+                            }
+
                             try {
-                                onToken(message.toString())
+                                onToken(message.toString(), null)
                             } catch (e: Exception) {
                                 LogManager.w(TAG, "Token callback error (client may have disconnected): ${e.message}")
                                 if (resumed.compareAndSet(false, true)) {
-                                    // Close the conversation immediately from the callback
-                                    // thread to send a stop signal to the native engine
-                                    // right away.  Without this, the engine keeps generating
-                                    // tokens, delaying the release of this pool slot and
-                                    // blocking any new request that needs the same slot.
                                     try { conversation?.close() } catch (ignored: Exception) { }
                                     continuation.resumeWithException(e)
                                 }
@@ -574,6 +617,17 @@ class LlamaModel(
 
                         override fun onDone() {
                             LogManager.i(TAG, "Streaming completed")
+                            val endTime = System.currentTimeMillis()
+                            try {
+                                onToken("", GenerationStats(
+                                    startTime = startTime,
+                                    prefillEndTime = prefillEndTime,
+                                    generationEndTime = endTime
+                                ))
+                            } catch (e: Exception) {
+                                LogManager.w(TAG, "Done callback error: ${e.message}")
+                            }
+
                             if (resumed.compareAndSet(false, true)) {
                                 continuation.resume(Unit)
                             }
@@ -594,7 +648,7 @@ class LlamaModel(
             } catch (e: Exception) {
                 Log.e(TAG, "Streaming failed", e)
                 LogManager.e(TAG, "Streaming failed: ${e.message}", e)
-                try { onToken("Error: ${e.message}") } catch (ignored: Exception) {
+                try { onToken("Error: ${e.message}", null) } catch (ignored: Exception) {
                     // Client may have already disconnected; nothing to do.
                 }
             } finally {
@@ -611,17 +665,18 @@ class LlamaModel(
      * @param contents List of Content objects (text, images, audio)
      * @param config Generation configuration with all parameters (optional)
      * @param sessionId Unused – kept for API compatibility
-     * @param onToken Callback for each generated token
+     * @param onToken Callback for each generated token with optional stats
      * @return Job that can be cancelled, or null on error
      */
     fun generateStreamWithContents(
         contents: List<Content>,
         config: GenerationConfig = GenerationConfig(),
         sessionId: String = "",
-        onToken: (String) -> Unit
+        onToken: (String, GenerationStats?) -> Unit
     ): Job? {
+        val startTime = System.currentTimeMillis()
         if (!isModelLoaded()) {
-            onToken("Error: Model not loaded. Please load a model first.")
+            onToken("Error: Model not loaded. Please load a model first.", null)
             return null
         }
 
@@ -631,7 +686,13 @@ class LlamaModel(
         if (modelPath == "mock-model") {
             return scope.launch {
                 val mockResponse = "This is a mock multimodal streaming response from the model with ${contents.size} content parts. "
-                onToken(mockResponse)
+                onToken(mockResponse, null)
+                try { delay(100) } catch (e: Exception) {}
+                onToken("", GenerationStats(
+                    startTime = startTime,
+                    prefillEndTime = startTime + 50,
+                    generationEndTime = System.currentTimeMillis()
+                ))
             }
         }
 
@@ -641,7 +702,7 @@ class LlamaModel(
             var conversation: Conversation? = null
             try {
                 if (!isLoaded) {
-                    onToken("Error: Model not loaded. Please load a model first.")
+                    onToken("Error: Model not loaded. Please load a model first.", null)
                     return@launch
                 }
 
@@ -649,34 +710,29 @@ class LlamaModel(
 
                 if (conversation == null) {
                     LogManager.e(TAG, "Failed to create conversation")
-                    onToken("Error: Failed to create conversation")
+                    onToken("Error: Failed to create conversation", null)
                     return@launch
                 }
 
                 suspendCancellableCoroutine<Unit> { continuation ->
                     val resumed = AtomicBoolean(false)
+                    var firstTokenReceived = false
+                    var prefillEndTime = 0L
 
                     val callback = object : MessageCallback {
                         override fun onMessage(message: Message) {
-                            // If the continuation was already resumed (e.g. the client
-                            // disconnected), skip further token delivery immediately.
-                            // This avoids redundant IOException throws and keeps the
-                            // native callback thread free.
                             if (resumed.get()) return
 
-                            // Emit each token chunk directly as it arrives from the engine.
-                            // Wrap in try-catch: exceptions must never escape a JNI callback or
-                            // they will crash the native engine / the Android process.
+                            if (!firstTokenReceived) {
+                                firstTokenReceived = true
+                                prefillEndTime = System.currentTimeMillis()
+                            }
+
                             try {
-                                onToken(message.toString())
+                                onToken(message.toString(), null)
                             } catch (e: Exception) {
                                 LogManager.w(TAG, "Multimodal token callback error (client may have disconnected): ${e.message}")
                                 if (resumed.compareAndSet(false, true)) {
-                                    // Close the conversation immediately from the callback
-                                    // thread to send a stop signal to the native engine
-                                    // right away.  Without this, the engine keeps generating
-                                    // tokens, delaying the release of this pool slot and
-                                    // blocking any new request that needs the same slot.
                                     try { conversation?.close() } catch (ignored: Exception) { }
                                     continuation.resumeWithException(e)
                                 }
@@ -685,6 +741,17 @@ class LlamaModel(
 
                         override fun onDone() {
                             LogManager.i(TAG, "Multimodal streaming completed")
+                            val endTime = System.currentTimeMillis()
+                            try {
+                                onToken("", GenerationStats(
+                                    startTime = startTime,
+                                    prefillEndTime = prefillEndTime,
+                                    generationEndTime = endTime
+                                ))
+                            } catch (e: Exception) {
+                                LogManager.w(TAG, "Done callback error: ${e.message}")
+                            }
+
                             if (resumed.compareAndSet(false, true)) {
                                 continuation.resume(Unit)
                             }
@@ -705,7 +772,7 @@ class LlamaModel(
             } catch (e: Exception) {
                 Log.e(TAG, "Multimodal streaming failed", e)
                 LogManager.e(TAG, "Multimodal streaming failed: ${e.message}", e)
-                try { onToken("Error: ${e.message}") } catch (ignored: Exception) {
+                try { onToken("Error: ${e.message}", null) } catch (ignored: Exception) {
                     // Client may have already disconnected; nothing to do.
                 }
             } finally {
@@ -728,7 +795,7 @@ class LlamaModel(
         temperature: Float = 0.7f,
         onToken: (String) -> Unit
     ): Job? {
-        return generateStream(prompt, GenerationConfig(maxTokens = maxTokens, temperature = temperature.toDouble()), "", onToken)
+        return generateStream(prompt, GenerationConfig(maxTokens = maxTokens, temperature = temperature.toDouble()), "", { token, _ -> onToken(token) })
     }
 
     /**

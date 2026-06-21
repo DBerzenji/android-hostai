@@ -228,6 +228,48 @@
         .history-item:hover .delete-btn {
             opacity: 1;
         }
+
+        /* Stats Bar */
+        .stats-bar {
+            font-size: 0.75rem;
+            color: #8e8e8e;
+            padding: 4px 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .stats-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .stats-label {
+            font-weight: 500;
+        }
+        .stats-value {
+            color: #ececec;
+        }
+
+        /* Context Ring */
+        .context-monitor {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 8px;
+            min-width: 60px;
+        }
+        .context-ring {
+            position: relative;
+        }
+        .context-text {
+            font-size: 0.65rem;
+            color: #8e8e8e;
+            margin-top: 2px;
+            text-align: center;
+            white-space: nowrap;
+        }
     </style>
 
     <!-- MDI -->
@@ -337,6 +379,24 @@
 
                 <div class="input-wrapper">
                     <div class="input-container d-flex align-center">
+                        <!-- Context Ring Chart -->
+                        <div v-if="chatbotStore.showStats" class="context-monitor">
+                            <v-progress-circular
+                                :model-value="contextUsagePercent"
+                                :color="contextRingColor"
+                                size="32"
+                                width="3"
+                                class="context-ring"
+                            >
+                                <template v-slot:default>
+                                    <span style="font-size: 0.6rem">{{ contextUsagePercent }}%</span>
+                                </template>
+                            </v-progress-circular>
+                            <div class="context-text">
+                                {{ currentContextTokens }} / {{ chatbotStore.maxContextLength }}
+                            </div>
+                        </div>
+
                         <v-btn icon="mdi-plus" variant="text" size="small" @click="triggerFileInput"></v-btn>
                         <v-textarea v-model="messageStore.userMessage" placeholder="Type a message..." variant="plain"
                             density="compact" hide-details auto-grow rows="1" max-rows="10" class="custom-textarea flex-grow-1"
@@ -548,7 +608,11 @@
 
                                         <v-expansion-panel-text>
                                             <v-row class="px-3 mt-2 mr-2">
-
+                                                <v-checkbox v-model="chatbotStore.showStats"
+                                                    label="Show Stats" density='compact'
+                                                    color="primary">
+                                                </v-checkbox>
+                                                <v-spacer></v-spacer>
                                                 <v-combobox class="px-2" density='compact'
                                                     :label="$t('$vuetify.dataIterator.i.reasoning')"
                                                     v-model="chatbotStore.reasoning_effort" clearable
@@ -895,6 +959,35 @@
                                         :language="language == 'zhHans' ? 'zh-CN' : 'en-US'" :code-foldable="true"
                                         auto-fold-threshold="Infinity"></md-preview>
                                 </v-card-text>
+
+                                <!-- Response Stats -->
+                                <div v-if="chatbotStore.showStats && group.message.stats" class="stats-bar">
+                                    <div class="stats-item">
+                                        <v-icon size="x-small">mdi-arrow-right-bottom</v-icon>
+                                        <span class="stats-label">In:</span>
+                                        <span class="stats-value">{{ group.message.stats.prompt_tokens }}</span>
+                                    </div>
+                                    <div class="stats-item">
+                                        <v-icon size="x-small">mdi-arrow-left-top</v-icon>
+                                        <span class="stats-label">Out:</span>
+                                        <span class="stats-value">{{ group.message.stats.completion_tokens }}</span>
+                                    </div>
+                                    <div v-if="group.message.stats.prefill_tps" class="stats-item">
+                                        <v-icon size="x-small">mdi-speedometer</v-icon>
+                                        <span class="stats-label">Prefill:</span>
+                                        <span class="stats-value">{{ group.message.stats.prefill_tps.toFixed(1) }} t/s</span>
+                                    </div>
+                                    <div v-if="group.message.stats.decode_tps" class="stats-item">
+                                        <v-icon size="x-small">mdi-speedometer-slow</v-icon>
+                                        <span class="stats-label">Gen:</span>
+                                        <span class="stats-value">{{ group.message.stats.decode_tps.toFixed(1) }} t/s</span>
+                                    </div>
+                                    <div class="stats-item">
+                                        <v-icon size="x-small">mdi-cpu-64-bit</v-icon>
+                                        <span class="stats-label">Model:</span>
+                                        <span class="stats-value">{{ group.message.stats.model }}</span>
+                                    </div>
+                                </div>
                             </template>
                         </tuui-chat-card>
                     </div>
@@ -1491,11 +1584,22 @@
         });
 
         const useChatbotStore = defineStore("chatbotStore", {
-            state: () => ({ apiKey: "", url: "", path: "/v1/chat/completions", model: "Local AI", conversation_id: generateConversationId(), authPrefix: "Bearer", contentType: "application/json", max_tokens_type: "max_tokens", max_tokens_value: "", temperature: "", top_p: "", method: "POST", stream: true, thinking: true, reasoning_effort: null, mcp: false }),
+            state: () => ({ apiKey: "", url: "", path: "/v1/chat/completions", model: "Local AI", conversation_id: generateConversationId(), authPrefix: "Bearer", contentType: "application/json", max_tokens_type: "max_tokens", max_tokens_value: "", temperature: "", top_p: "", method: "POST", stream: true, thinking: true, reasoning_effort: null, mcp: false, showStats: true, maxContextLength: 2048 }),
             persist: { enabled: true, strategies: [{ storage: localStorage }] },
             actions: {
                 resetState() { this.$reset(); useDefaultChoiceStore().resetState(); },
-                updateStoreFromJSON(json) { this.$reset(); this.$state = json; }
+                updateStoreFromJSON(json) { this.$reset(); this.$state = json; },
+                async fetchInfo() {
+                    try {
+                        const response = await fetch('/v1/info');
+                        if (response.ok) {
+                            const info = await response.json();
+                            this.maxContextLength = info.max_context_length || 2048;
+                            this.showStats = info.show_stats !== undefined ? info.show_stats : this.showStats;
+                            if (info.model) this.model = info.model;
+                        }
+                    } catch (e) { console.error("Failed to fetch info:", e); }
+                }
             }
         });
 
@@ -1616,6 +1720,7 @@
             components: { TuuiImgDialog, TuuiChatCard },
             props: { messages: Array, size: Number, language: String },
             setup(props) {
+                const chatbotStore = useChatbotStore();
                 const dialogs = reactive({});
                 const groupMessages = computed(() => {
                     const groups = [];
@@ -1630,7 +1735,7 @@
                     });
                     return groups;
                 });
-                return { dialogs, groupMessages };
+                return { dialogs, groupMessages, chatbotStore };
             }
         };
 
@@ -1689,7 +1794,17 @@
             return read(reader, target, buffer, stream);
         };
 
-        const parseJson = (content, target) => { try { parseChoices(JSON.parse(content), target); } catch (e) { parseChoice(content, target); } };
+        const parseJson = (content, target) => {
+            try {
+                const parsed = JSON.parse(content);
+                if (parsed.usage && parsed.usage.x_hostai_stats) {
+                    target.stats = parsed.usage.x_hostai_stats;
+                    target.stats.prompt_tokens = parsed.usage.prompt_tokens;
+                    target.stats.completion_tokens = parsed.usage.completion_tokens;
+                }
+                parseChoices(parsed, target);
+            } catch (e) { parseChoice(content, target); }
+        };
         const parseChoices = (parsed, target) => {
             if ('choices' in parsed) parsed.choices.forEach(c => parseChoice(c.delta || c.message, target));
             else parseChoice(parsed.response || parsed, target);
@@ -1736,6 +1851,38 @@
                 const deleteDialog = ref(false);
                 const itemToDelete = ref(null);
                 const configFile = ref(null);
+
+                const countTokens = (content) => {
+                    if (!content) return 0;
+                    if (typeof content === 'string') return content.split(/\s+/).filter(Boolean).length;
+                    if (Array.isArray(content)) {
+                        return content.reduce((acc, part) => {
+                            if (part.type === 'text') return acc + countTokens(part.text);
+                            if (part.type === 'image_url') return acc + 85;
+                            return acc + 10;
+                        }, 0);
+                    }
+                    return 0;
+                };
+
+                const currentContextTokens = computed(() => {
+                    let tokens = messageStore.conversation.reduce((acc, m) => acc + countTokens(m.content), 0);
+                    tokens += countTokens(messageStore.userMessage);
+                    if (messageStore.base64) tokens += 85;
+                    return tokens;
+                });
+
+                const contextUsagePercent = computed(() => {
+                    const max = chatbotStore.maxContextLength || 2048;
+                    return Math.min(100, Math.round((currentContextTokens.value / max) * 100));
+                });
+
+                const contextRingColor = computed(() => {
+                    const percent = contextUsagePercent.value;
+                    if (percent > 90) return 'error';
+                    if (percent > 70) return 'warning';
+                    return 'primary';
+                });
 
                 const apiEndpoints = [
                     { method: 'GET', path: '/v1/models', description: 'List available models' },
@@ -1801,13 +1948,15 @@
                 onMounted(() => {
                     initLottie();
                     agentStore.initAgent();
+                    chatbotStore.fetchInfo();
                     const resize = () => { settingStore.avatarSize = window.innerWidth <= 1279 ? 26 : 36; };
                     resize(); window.onresize = resize;
                 });
 
                 return {
                     configFile, settingStore, promptStore, resourceStore, agentStore, snackbarStore, mcpStore, messageStore, defaultChoiceStore, chatbotStore, historyStore, languageStore,
-                    drawer, fileInput, searchQuery, filteredConversations, deleteDialog, confirmDelete, doDelete, triggerFileInput: () => fileInput.value?.click(), onFileChange: (e) => { if (e.target.files[0]) messageStore.images = e.target.files[0]; }, resetALL, apiEndpoints
+                    drawer, fileInput, searchQuery, filteredConversations, deleteDialog, confirmDelete, doDelete, triggerFileInput: () => fileInput.value?.click(), onFileChange: (e) => { if (e.target.files[0]) messageStore.images = e.target.files[0]; }, resetALL, apiEndpoints,
+                    currentContextTokens, contextUsagePercent, contextRingColor
                 };
             }
         });

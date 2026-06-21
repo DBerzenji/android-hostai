@@ -58,6 +58,9 @@ class SettingsActivity : AppCompatActivity() {
         
         // Load multimodal setting
         binding.multimodalSwitch.isChecked = settingsManager.isMultimodalEnabled()
+        
+        // Load show stats setting
+        binding.showStatsSwitch.isChecked = settingsManager.isShowStatsEnabled()
     }
     
     private fun setupUI() {
@@ -157,6 +160,9 @@ class SettingsActivity : AppCompatActivity() {
         
         // Save multimodal setting
         settingsManager.setMultimodalEnabled(binding.multimodalSwitch.isChecked)
+
+        // Save show stats setting
+        settingsManager.setShowStatsEnabled(binding.showStatsSwitch.isChecked)
         
         Toast.makeText(this, R.string.settings_saved, Toast.LENGTH_SHORT).show()
         

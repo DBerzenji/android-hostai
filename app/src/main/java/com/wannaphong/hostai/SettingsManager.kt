@@ -21,6 +21,7 @@ class SettingsManager(context: Context) {
         private const val KEY_MAX_CONCURRENCY = "max_concurrency"
         private const val KEY_MAX_CONTEXT_LENGTH = "max_context_length"
         private const val KEY_MULTIMODAL_ENABLED = "multimodal_enabled"
+        private const val KEY_SHOW_STATS_ENABLED = "show_stats_enabled"
 
         const val BACKEND_CPU = "cpu"
         const val BACKEND_GPU = "gpu"
@@ -178,5 +179,19 @@ class SettingsManager(context: Context) {
      */
     fun setMultimodalEnabled(enabled: Boolean) {
         prefs.edit().putBoolean(KEY_MULTIMODAL_ENABLED, enabled).apply()
+    }
+
+    /**
+     * Check if showing response stats is enabled (default: true)
+     */
+    fun isShowStatsEnabled(): Boolean {
+        return prefs.getBoolean(KEY_SHOW_STATS_ENABLED, true)
+    }
+
+    /**
+     * Set showing response stats enabled state
+     */
+    fun setShowStatsEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_SHOW_STATS_ENABLED, enabled).apply()
     }
 }

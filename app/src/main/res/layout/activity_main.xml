@@ -24,6 +24,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -31,17 +32,17 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clipToPadding="false"
             android:orientation="vertical"
-            android:padding="20dp"
-            android:clipToPadding="false">
+            android:padding="20dp">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/statusCard"
+                style="@style/Widget.Material3.CardView.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/Widget.Material3.CardView.Filled"
-                app:cardBackgroundColor="?attr/colorPrimaryContainer"
-                android:stateListAnimator="@null">
+                android:stateListAnimator="@null"
+                app:cardBackgroundColor="?attr/colorPrimaryContainer">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -52,41 +53,41 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-                        
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
+                            android:alpha="0.7"
                             android:text="@string/server_status"
                             android:textAllCaps="true"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
                             android:textColor="?attr/colorOnPrimaryContainer"
-                            android:alpha="0.7" />
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
 
-                        </LinearLayout>
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/serverStatusText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
                         android:text="@string/server_stopped"
-                        android:textSize="34sp"
-                        android:textStyle="bold"
                         android:textColor="?attr/colorOnPrimaryContainer"
-                        android:layout_marginTop="4dp" />
+                        android:textSize="34sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/modelStatusText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/model_not_loaded"
-                        android:textSize="14sp"
-                        android:textColor="?attr/colorOnPrimaryContainer"
+                        android:layout_marginTop="8dp"
                         android:alpha="0.9"
-                        android:layout_marginTop="8dp" />
+                        android:text="@string/model_not_loaded"
+                        android:textColor="?attr/colorOnPrimaryContainer"
+                        android:textSize="14sp" />
 
                     <View
                         android:id="@+id/serverUrlDivider"
@@ -94,76 +95,76 @@
                         android:layout_height="1dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginBottom="16dp"
-                        android:background="?attr/colorOnPrimaryContainer"
                         android:alpha="0.2"
+                        android:background="?attr/colorOnPrimaryContainer"
                         android:visibility="gone" />
 
                     <TextView
                         android:id="@+id/serverUrlLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Server URL"
-                        android:textSize="12sp"
-                        android:textAllCaps="true"
-                        android:textStyle="bold"
-                        android:textColor="?attr/colorOnPrimaryContainer"
                         android:alpha="0.7"
+                        android:text="Server URL"
+                        android:textAllCaps="true"
+                        android:textColor="?attr/colorOnPrimaryContainer"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
                         android:visibility="gone" />
 
                     <TextView
                         android:id="@+id/serverUrlText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text=""
-                        android:textSize="16sp"
-                        android:textColor="?attr/colorOnPrimaryContainer"
                         android:layout_marginTop="4dp"
+                        android:text=""
+                        android:textColor="?attr/colorOnPrimaryContainer"
+                        android:textSize="16sp"
                         android:visibility="gone" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/copyUrlButton"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Copy URL"
                         android:layout_marginTop="8dp"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:text="Copy URL"
                         android:visibility="gone" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/selectModelButton"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/select_model"
                         android:layout_marginTop="8dp"
-                        style="@style/Widget.Material3.Button.OutlinedButton" />
+                        android:text="@string/select_model" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/startStopButton"
+                        style="@style/Widget.Material3.Button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/start_server"
                         android:layout_marginTop="20dp"
-                        style="@style/Widget.Material3.Button"
+                        android:text="@string/start_server"
                         app:backgroundTint="?attr/colorPrimary"
                         app:rippleColor="?attr/colorOnPrimary" />
-                        
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="16dp"
                 android:text="Dashboard"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="16dp" />
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:baselineAligned="false">
+                android:baselineAligned="false"
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -174,29 +175,29 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/manageModelsButton"
+                        style="@style/Widget.HostAI.Button.Grid"
                         android:layout_width="match_parent"
                         android:layout_height="100dp"
-                        android:text="@string/manage_models"
                         android:gravity="center"
-                        style="@style/Widget.HostAI.Button.Grid" />
+                        android:text="@string/manage_models" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/viewLogsButton"
+                        style="@style/Widget.HostAI.Button.Grid"
                         android:layout_width="match_parent"
                         android:layout_height="100dp"
-                        android:text="@string/view_logs"
-                        android:gravity="center"
                         android:layout_marginTop="16dp"
-                        style="@style/Widget.HostAI.Button.Grid" />
+                        android:gravity="center"
+                        android:text="@string/view_logs" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/monitorUsageButton"
+                        style="@style/Widget.HostAI.Button.Grid"
                         android:layout_width="match_parent"
                         android:layout_height="100dp"
-                        android:text="@string/monitor_usage"
-                        android:gravity="center"
                         android:layout_marginTop="16dp"
-                        style="@style/Widget.HostAI.Button.Grid" />
+                        android:gravity="center"
+                        android:text="@string/monitor_usage" />
 
                 </LinearLayout>
 
@@ -209,40 +210,40 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/manageCompletionsButton"
+                        style="@style/Widget.HostAI.Button.Grid"
                         android:layout_width="match_parent"
                         android:layout_height="100dp"
-                        android:text="@string/manage_completions"
                         android:gravity="center"
-                        style="@style/Widget.HostAI.Button.Grid" />
+                        android:text="@string/manage_completions" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/settingsButton"
+                        style="@style/Widget.HostAI.Button.Grid"
                         android:layout_width="match_parent"
                         android:layout_height="100dp"
-                        android:text="@string/settings"
-                        android:gravity="center"
                         android:layout_marginTop="16dp"
-                        style="@style/Widget.HostAI.Button.Grid" />
+                        android:gravity="center"
+                        android:text="@string/settings" />
 
                 </LinearLayout>
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/testServerButton"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/test_server"
                 android:layout_marginTop="16dp"
-                style="@style/Widget.Material3.Button.OutlinedButton" />
-                
+                android:text="@string/test_server" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/exitButton"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:text="@string/exit_app"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:textColor="@color/error"
-                android:layout_marginTop="8dp" />
+                android:textColor="@color/error" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

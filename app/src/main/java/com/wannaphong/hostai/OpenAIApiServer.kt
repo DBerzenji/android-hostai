@@ -107,6 +107,9 @@ class OpenAIApiServer(
                 // Health check
                 get("/health") { ctx -> handleHealth(ctx) }
                 
+                // Model info endpoint for context size and model info
+                get("/v1/info") { ctx -> handleInfo(ctx) }
+                
                 // Model endpoints
                 get("/v1/models") { ctx -> handleModels(ctx) }
                 
@@ -227,6 +230,20 @@ class OpenAIApiServer(
         )
         
         ctx.contentType("application/json").result(gson.toJson(health))
+    }
+
+    private fun handleInfo(ctx: JavalinContext) {
+        LogManager.d(TAG, "Handling /v1/info")
+        
+        val info = mapOf(
+            "model" to model.getModelName(),
+            "max_context_length" to settingsManager.getMaxContextLength(),
+            "backend" to settingsManager.getBackend(),
+            "multimodal" to settingsManager.isMultimodalEnabled(),
+            "show_stats" to settingsManager.isShowStatsEnabled()
+        )
+        
+        ctx.contentType("application/json").result(gson.toJson(info))
     }
     
     private fun handleModels(ctx: JavalinContext) {
@@ -450,13 +467,16 @@ class OpenAIApiServer(
         bodyText: String
     ) {
         // Generate response with session ID - handle both String and multimodal content
-        val completion = if (contents is String) {
+        val result = if (contents is String) {
             model.generate(contents, config, sessionId)
         } else {
             @Suppress("UNCHECKED_CAST")
             model.generateWithContents(contents as List<Content>, config, sessionId)
         }
         
+        val completion = result.text
+        val stats = result.stats
+
         val promptTokens = when (contents) {
             is String -> contents.split(" ").size
             else -> {
@@ -522,6 +542,29 @@ class OpenAIApiServer(
             LogManager.i(TAG, "Stored completion with ID: $id")
         }
         
+        val usageMap = mutableMapOf<String, Any>(
+            "prompt_tokens" to promptTokens,
+            "completion_tokens" to completionTokens,
+            "total_tokens" to (promptTokens + completionTokens)
+        )
+
+        // Add detailed stats if enabled
+        if (settingsManager.isShowStatsEnabled()) {
+            val prefillTimeMs = stats.prefillEndTime - stats.startTime
+            val generationTimeMs = stats.generationEndTime - stats.prefillEndTime
+            
+            val prefillTps = if (prefillTimeMs > 0) (promptTokens.toDouble() / (prefillTimeMs / 1000.0)) else 0.0
+            val decodeTps = if (generationTimeMs > 0) (completionTokens.toDouble() / (generationTimeMs / 1000.0)) else 0.0
+            
+            usageMap["x_hostai_stats"] = mapOf(
+                "prefill_ms" to prefillTimeMs,
+                "generation_ms" to generationTimeMs,
+                "prefill_tps" to prefillTps,
+                "decode_tps" to decodeTps,
+                "model" to model.getModelName()
+            )
+        }
+
         val response = mapOf(
             "id" to id,
             "object" to "chat.completion",
@@ -537,11 +580,7 @@ class OpenAIApiServer(
                     "finish_reason" to "stop"
                 )
             ),
-            "usage" to mapOf(
-                "prompt_tokens" to promptTokens,
-                "completion_tokens" to completionTokens,
-                "total_tokens" to (promptTokens + completionTokens)
-            )
+            "usage" to usageMap
         )
         
         LogManager.i(TAG, "Chat completion completed successfully for session: $sessionId")
@@ -590,8 +629,48 @@ class OpenAIApiServer(
             var tokenCount = 0
             
             val job = if (contents is String) {
-                model.generateStream(contents, config, sessionId) { token ->
+                model.generateStream(contents, config, sessionId) { token, stats ->
                     try {
+                        if (stats != null) {
+                            // Final message with stats
+                            val promptTokens = contents.split(" ").size
+                            val completionTokens = tokenCount
+                            
+                            val usageMap = mutableMapOf<String, Any>(
+                                "prompt_tokens" to promptTokens,
+                                "completion_tokens" to completionTokens,
+                                "total_tokens" to (promptTokens + completionTokens)
+                            )
+                            
+                            if (settingsManager.isShowStatsEnabled()) {
+                                val prefillTimeMs = stats.prefillEndTime - stats.startTime
+                                val generationTimeMs = stats.generationEndTime - stats.prefillEndTime
+                                
+                                val prefillTps = if (prefillTimeMs > 0) (promptTokens.toDouble() / (prefillTimeMs / 1000.0)) else 0.0
+                                val decodeTps = if (generationTimeMs > 0) (completionTokens.toDouble() / (generationTimeMs / 1000.0)) else 0.0
+                                
+                                usageMap["x_hostai_stats"] = mapOf(
+                                    "prefill_ms" to prefillTimeMs,
+                                    "generation_ms" to generationTimeMs,
+                                    "prefill_tps" to prefillTps,
+                                    "decode_tps" to decodeTps,
+                                    "model" to model.getModelName()
+                                )
+                            }
+                            
+                            val finalChunk = mapOf(
+                                "id" to id,
+                                "object" to "chat.completion.chunk",
+                                "created" to created,
+                                "model" to model.getModelName(),
+                                "choices" to emptyList<Any>(),
+                                "usage" to usageMap
+                            )
+                            outputStream.write("data: ${gson.toJson(finalChunk)}\n\n".toByteArray(Charsets.UTF_8))
+                            outputStream.flush()
+                            return@generateStream
+                        }
+
                         tokenCount++
                         
                         // Accumulate token for logging
@@ -632,8 +711,55 @@ class OpenAIApiServer(
             } else {
                 // Multimodal streaming
                 @Suppress("UNCHECKED_CAST")
-                model.generateStreamWithContents(contents as List<Content>, config, sessionId) { token ->
+                model.generateStreamWithContents(contents as List<Content>, config, sessionId) { token, stats ->
                     try {
+                        if (stats != null) {
+                            // Final message with stats
+                            val promptTokens = (contents as List<Content>).sumOf { content ->
+                                when (content) {
+                                    is Content.Text -> content.toString().split(" ").size
+                                    is Content.ImageBytes -> 85
+                                    is Content.AudioBytes -> 50
+                                    else -> 10
+                                }
+                            }
+                            val completionTokens = tokenCount
+                            
+                            val usageMap = mutableMapOf<String, Any>(
+                                "prompt_tokens" to promptTokens,
+                                "completion_tokens" to completionTokens,
+                                "total_tokens" to (promptTokens + completionTokens)
+                            )
+                            
+                            if (settingsManager.isShowStatsEnabled()) {
+                                val prefillTimeMs = stats.prefillEndTime - stats.startTime
+                                val generationTimeMs = stats.generationEndTime - stats.prefillEndTime
+                                
+                                val prefillTps = if (prefillTimeMs > 0) (promptTokens.toDouble() / (prefillTimeMs / 1000.0)) else 0.0
+                                val decodeTps = if (generationTimeMs > 0) (completionTokens.toDouble() / (generationTimeMs / 1000.0)) else 0.0
+                                
+                                usageMap["x_hostai_stats"] = mapOf(
+                                    "prefill_ms" to prefillTimeMs,
+                                    "generation_ms" to generationTimeMs,
+                                    "prefill_tps" to prefillTps,
+                                    "decode_tps" to decodeTps,
+                                    "model" to model.getModelName()
+                                )
+                            }
+                            
+                            val finalChunk = mapOf(
+                                "id" to id,
+                                "object" to "chat.completion.chunk",
+                                "created" to created,
+                                "model" to model.getModelName(),
+                                "choices" to emptyList<Any>(),
+                                "usage" to usageMap
+                            )
+                            outputStream.write("data: ${gson.toJson(finalChunk)}\n\n".toByteArray(Charsets.UTF_8))
+                            outputStream.flush()
+                            return@generateStreamWithContents
+                        }
+
                         tokenCount++
                         
                         // Accumulate token for logging
@@ -825,11 +951,36 @@ class OpenAIApiServer(
         bodyText: String
     ) {
         // Generate response with session ID
-        val completion = model.generate(prompt, config, sessionId)
-        
+        val result = model.generate(prompt, config, sessionId)
+        val completion = result.text
+        val stats = result.stats
+
         val promptTokens = prompt.split(" ").size
         val completionTokens = completion.split(" ").size
         
+        val usageMap = mutableMapOf<String, Any>(
+            "prompt_tokens" to promptTokens,
+            "completion_tokens" to completionTokens,
+            "total_tokens" to (promptTokens + completionTokens)
+        )
+
+        // Add detailed stats if enabled
+        if (settingsManager.isShowStatsEnabled()) {
+            val prefillTimeMs = stats.prefillEndTime - stats.startTime
+            val generationTimeMs = stats.generationEndTime - stats.prefillEndTime
+            
+            val prefillTps = if (prefillTimeMs > 0) (promptTokens.toDouble() / (prefillTimeMs / 1000.0)) else 0.0
+            val decodeTps = if (generationTimeMs > 0) (completionTokens.toDouble() / (generationTimeMs / 1000.0)) else 0.0
+            
+            usageMap["x_hostai_stats"] = mapOf(
+                "prefill_ms" to prefillTimeMs,
+                "generation_ms" to generationTimeMs,
+                "prefill_tps" to prefillTps,
+                "decode_tps" to decodeTps,
+                "model" to model.getModelName()
+            )
+        }
+
         val response = mapOf(
             "id" to "cmpl-${System.currentTimeMillis()}",
             "object" to "text_completion",
@@ -842,11 +993,7 @@ class OpenAIApiServer(
                     "finish_reason" to "stop"
                 )
             ),
-            "usage" to mapOf(
-                "prompt_tokens" to promptTokens,
-                "completion_tokens" to completionTokens,
-                "total_tokens" to (promptTokens + completionTokens)
-            )
+            "usage" to usageMap
         )
         
         val responseJson = gson.toJson(response)
@@ -883,8 +1030,48 @@ class OpenAIApiServer(
         try {
             var tokenCount = 0
             
-            val job = model.generateStream(prompt, config, sessionId) { token ->
+            val job = model.generateStream(prompt, config, sessionId) { token, stats ->
                 try {
+                    if (stats != null) {
+                        // Final message with stats
+                        val promptTokens = prompt.split(" ").size
+                        val completionTokens = tokenCount
+                        
+                        val usageMap = mutableMapOf<String, Any>(
+                            "prompt_tokens" to promptTokens,
+                            "completion_tokens" to completionTokens,
+                            "total_tokens" to (promptTokens + completionTokens)
+                        )
+                        
+                        if (settingsManager.isShowStatsEnabled()) {
+                            val prefillTimeMs = stats.prefillEndTime - stats.startTime
+                            val generationTimeMs = stats.generationEndTime - stats.prefillEndTime
+                            
+                            val prefillTps = if (prefillTimeMs > 0) (promptTokens.toDouble() / (prefillTimeMs / 1000.0)) else 0.0
+                            val decodeTps = if (generationTimeMs > 0) (completionTokens.toDouble() / (generationTimeMs / 1000.0)) else 0.0
+                            
+                            usageMap["x_hostai_stats"] = mapOf(
+                                "prefill_ms" to prefillTimeMs,
+                                "generation_ms" to generationTimeMs,
+                                "prefill_tps" to prefillTps,
+                                "decode_tps" to decodeTps,
+                                "model" to model.getModelName()
+                            )
+                        }
+                        
+                        val finalChunk = mapOf(
+                            "id" to id,
+                            "object" to "text_completion",
+                            "created" to created,
+                            "model" to model.getModelName(),
+                            "choices" to emptyList<Any>(),
+                            "usage" to usageMap
+                        )
+                        outputStream.write("data: ${gson.toJson(finalChunk)}\n\n".toByteArray(Charsets.UTF_8))
+                        outputStream.flush()
+                        return@generateStream
+                    }
+
                     tokenCount++
                     
                     // Accumulate token for logging
