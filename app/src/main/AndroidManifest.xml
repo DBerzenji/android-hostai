@@ -56,6 +56,12 @@
             android:parentActivityName=".MainActivity" />
 
         <activity
+            android:name=".MonitorActivity"
+            android:exported="false"
+            android:label="@string/monitor_usage_title"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
             android:name=".SettingsActivity"
             android:exported="false"
             android:label="@string/settings"

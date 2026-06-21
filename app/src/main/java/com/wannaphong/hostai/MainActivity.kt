@@ -117,8 +117,13 @@ class MainActivity : AppCompatActivity() {
             testServer()
         }
         
-        binding.manageModelsButton.setOnClickListener {
-            openModelManagement()
+        binding.selectModelButton.setOnClickListener {
+            if (isServerRunning()) {
+                // If server is running, stop it first before allowing model change
+                changeModel()
+            } else {
+                selectModelFile()
+            }
         }
         
         binding.viewLogsButton.setOnClickListener {
@@ -133,12 +138,12 @@ class MainActivity : AppCompatActivity() {
             openModelManagement()
         }
         
-        binding.settingsButton.setOnClickListener {
-            openSettings()
+        binding.monitorUsageButton.setOnClickListener {
+            openMonitorUsage()
         }
         
-        binding.openInBrowserButton.setOnClickListener {
-            openUrlInBrowser()
+        binding.settingsButton.setOnClickListener {
+            openSettings()
         }
         
         binding.exitButton.setOnClickListener {
@@ -167,6 +172,11 @@ class MainActivity : AppCompatActivity() {
         modelManagementLauncher.launch(intent)
     }
     
+    private fun openMonitorUsage() {
+        val intent = Intent(this, MonitorActivity::class.java)
+        startActivity(intent)
+    }
+    
     private fun exitApp() {
         LogManager.i("MainActivity", "User requested to exit app")
         
@@ -193,19 +203,6 @@ class MainActivity : AppCompatActivity() {
     private fun startServer() {
         LogManager.i("MainActivity", "User requested to start server")
         
-        // Safety check: Ensure a model is selected
-        if (selectedModelPath == null) {
-            com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                .setTitle("No Model Loaded")
-                .setMessage("Please select or add a LiteRT model file before starting the server.")
-                .setPositiveButton("Add Model") { _, _ ->
-                    selectModelFile()
-                }
-                .setNegativeButton("Cancel", null)
-                .show()
-            return
-        }
-
         // Check for notification permission on Android 13+ (API 33+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             when {
@@ -294,25 +291,33 @@ class MainActivity : AppCompatActivity() {
             binding.serverStatusText.text = getString(R.string.server_running)
             binding.serverStatusText.setTextColor(ContextCompat.getColor(this, R.color.success))
             binding.startStopButton.text = getString(R.string.stop_server)
-            binding.startStopButton.setIconResource(0) // Clear icon if any
             
             val ipAddress = getLocalIpAddress()
             val port = apiServerService?.getServerPort() ?: ApiServerService.DEFAULT_PORT
             val serverUrl = "http://$ipAddress:$port"
             
-            binding.serverInfoLayout.visibility = View.VISIBLE
+            binding.serverUrlDivider.visibility = View.VISIBLE
+            binding.serverUrlLabel.visibility = View.VISIBLE
+            binding.serverUrlText.visibility = View.VISIBLE
             binding.serverUrlText.text = serverUrl
+            binding.copyUrlButton.visibility = View.VISIBLE
             binding.testServerButton.visibility = View.VISIBLE
             
             val model = apiServerService?.getLoadedModel()
             val modelName = model?.getModelName() ?: "Unknown"
             binding.modelStatusText.text = getString(R.string.model_loaded, modelName)
+            // Enable the button to allow changing model while running
+            binding.selectModelButton.isEnabled = true
+            binding.selectModelButton.text = getString(R.string.change_model)
         } else {
             binding.serverStatusText.text = getString(R.string.server_stopped)
             binding.serverStatusText.setTextColor(ContextCompat.getColor(this, R.color.error))
             binding.startStopButton.text = getString(R.string.start_server)
             
-            binding.serverInfoLayout.visibility = View.GONE
+            binding.serverUrlDivider.visibility = View.GONE
+            binding.serverUrlLabel.visibility = View.GONE
+            binding.serverUrlText.visibility = View.GONE
+            binding.copyUrlButton.visibility = View.GONE
             binding.testServerButton.visibility = View.GONE
             
             if (selectedModelName != null) {
@@ -320,14 +325,8 @@ class MainActivity : AppCompatActivity() {
             } else {
                 binding.modelStatusText.text = getString(R.string.no_model_selected)
             }
-        }
-    }
-    
-    private fun openUrlInBrowser() {
-        val url = binding.serverUrlText.text.toString()
-        if (url.isNotEmpty()) {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            startActivity(intent)
+            binding.selectModelButton.isEnabled = true
+            binding.selectModelButton.text = getString(R.string.select_model)
         }
     }
     

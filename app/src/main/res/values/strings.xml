@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">LiteRT AI Server</string>
+    <string name="app_name">HostAI</string>
     <string name="server_status">Server Status</string>
     <string name="server_stopped">Stopped</string>
     <string name="server_running">Running</string>
@@ -18,7 +18,7 @@
     <string name="server_info">OpenAI-Compatible API Server\n\nEndpoints:\n• /v1/chat/completions\n• /v1/completions\n• /v1/models</string>
     <string name="notification_channel_name">API Server</string>
     <string name="notification_channel_desc">Shows when API server is running</string>
-    <string name="notification_title">LiteRT AI Server Running</string>
+    <string name="notification_title">HostAI Server Running</string>
     <string name="notification_text">Server is listening on %s</string>
     <string name="copy_url">Copy URL</string>
     <string name="url_copied">URL copied to clipboard</string>
@@ -96,4 +96,15 @@
     <string name="invalid_max_context_length">Invalid max context length. Please enter a value of 512 or more.</string>
     <string name="multimodal_mode_title">Multimodal Model</string>
     <string name="multimodal_mode_desc">Enable for multimodal models that include vision and audio components (e.g. Gemma 3N). Keep disabled for text-only models such as Gemma 3 1B/4B.</string>
+
+    <!-- Monitor Usage -->
+    <string name="monitor_usage">Monitor Usage</string>
+    <string name="monitor_usage_title">Resource Usage Monitor</string>
+    <string name="monitor_best_effort_notice">Best-effort monitor: total system CPU/GPU/NPU usage is not available without root/ADB on Android 8.0+. Values below use public APIs only.</string>
+    <string name="monitor_memory_title">Memory</string>
+    <string name="monitor_power_title">Power</string>
+    <string name="monitor_thermal_title">Thermals</string>
+    <string name="monitor_network_title">Network</string>
+    <string name="monitor_cpu_title">Processor</string>
+    <string name="monitor_cpu_notice">Total system CPU % is unavailable. This shows the app\'s own CPU time as an indirect load indicator.</string>
 </resources>
