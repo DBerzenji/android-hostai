@@ -19,6 +19,7 @@ import android.os.IBinder
 import android.provider.OpenableColumns
 import android.text.format.Formatter
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -56,13 +57,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
     
-    private val filePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            result.data?.data?.let { uri ->
-                handleSelectedFile(uri)
-            }
-        }
-    }
     
     private val modelManagementLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -109,40 +103,30 @@ class MainActivity : AppCompatActivity() {
             }
         }
         
-        binding.copyUrlButton.setOnClickListener {
-            copyUrlToClipboard()
+        binding.openBrowserButton.setOnClickListener {
+            openInBrowser()
         }
         
-        binding.testServerButton.setOnClickListener {
-            testServer()
-        }
+        // Setup Model Selector
+        setupModelSelector()
         
-        binding.selectModelButton.setOnClickListener {
-            if (isServerRunning()) {
-                // If server is running, stop it first before allowing model change
-                changeModel()
-            } else {
-                selectModelFile()
-            }
-        }
-        
-        binding.viewLogsButton.setOnClickListener {
+        binding.viewLogsCard.setOnClickListener {
             openLogViewer()
         }
         
-        binding.manageCompletionsButton.setOnClickListener {
+        binding.manageCompletionsCard.setOnClickListener {
             openStoredCompletions()
         }
         
-        binding.manageModelsButton.setOnClickListener {
+        binding.manageModelsCard.setOnClickListener {
             openModelManagement()
         }
         
-        binding.monitorUsageButton.setOnClickListener {
+        binding.monitorUsageCard.setOnClickListener {
             openMonitorUsage()
         }
         
-        binding.settingsButton.setOnClickListener {
+        binding.settingsCard.setOnClickListener {
             openSettings()
         }
         
@@ -151,6 +135,42 @@ class MainActivity : AppCompatActivity() {
         }
         
         updateUI()
+    }
+
+    private fun setupModelSelector() {
+        val models = modelManager.getModels()
+        val modelNames = models.map { it.name }
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, modelNames)
+        binding.modelSelector.setAdapter(adapter)
+        
+        // Set current selection
+        val selectedModel = modelManager.getSelectedModel()
+        selectedModel?.let {
+            binding.modelSelector.setText(it.name, false)
+        }
+        
+        binding.modelSelector.setOnItemClickListener { _, _, position, _ ->
+            val selectedModel = models[position]
+            modelManager.setSelectedModelId(selectedModel.id)
+            selectedModelPath = selectedModel.path
+            selectedModelName = selectedModel.name
+            
+            if (isServerRunning()) {
+                // If server is running, offer to restart or just stop
+                changeModel()
+            } else {
+                Toast.makeText(this, "Model selected: ${selectedModel.name}", Toast.LENGTH_SHORT).show()
+                updateUI()
+            }
+        }
+    }
+
+    private fun openInBrowser() {
+        val ipAddress = getLocalIpAddress()
+        val port = apiServerService?.getServerPort() ?: ApiServerService.DEFAULT_PORT
+        val url = "http://$ipAddress:$port"
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        startActivity(intent)
     }
     
     private fun loadSelectedModelFromManager() {
@@ -288,45 +308,22 @@ class MainActivity : AppCompatActivity() {
         val isRunning = isServerRunning()
         
         if (isRunning) {
-            binding.serverStatusText.text = getString(R.string.server_running)
-            binding.serverStatusText.setTextColor(ContextCompat.getColor(this, R.color.success))
-            binding.startStopButton.text = getString(R.string.stop_server)
+            binding.serverStatusText.text = "Server: Running"
+            binding.statusDot.setImageResource(R.drawable.ic_dot_green)
+            binding.startStopButton.text = "Stop Server"
             
-            val ipAddress = getLocalIpAddress()
-            val port = apiServerService?.getServerPort() ?: ApiServerService.DEFAULT_PORT
-            val serverUrl = "http://$ipAddress:$port"
+            binding.openBrowserButton.visibility = View.VISIBLE
             
-            binding.serverUrlDivider.visibility = View.VISIBLE
-            binding.serverUrlLabel.visibility = View.VISIBLE
-            binding.serverUrlText.visibility = View.VISIBLE
-            binding.serverUrlText.text = serverUrl
-            binding.copyUrlButton.visibility = View.VISIBLE
-            binding.testServerButton.visibility = View.VISIBLE
-            
-            val model = apiServerService?.getLoadedModel()
-            val modelName = model?.getModelName() ?: "Unknown"
-            binding.modelStatusText.text = getString(R.string.model_loaded, modelName)
-            // Enable the button to allow changing model while running
-            binding.selectModelButton.isEnabled = true
-            binding.selectModelButton.text = getString(R.string.change_model)
+            // Disable model selector while running (or handle restart)
+            binding.modelSelectorLayout.isEnabled = true
         } else {
-            binding.serverStatusText.text = getString(R.string.server_stopped)
-            binding.serverStatusText.setTextColor(ContextCompat.getColor(this, R.color.error))
-            binding.startStopButton.text = getString(R.string.start_server)
+            binding.serverStatusText.text = "Server: Stopped"
+            binding.statusDot.setImageResource(R.drawable.ic_dot_red)
+            binding.startStopButton.text = "Start Server"
             
-            binding.serverUrlDivider.visibility = View.GONE
-            binding.serverUrlLabel.visibility = View.GONE
-            binding.serverUrlText.visibility = View.GONE
-            binding.copyUrlButton.visibility = View.GONE
-            binding.testServerButton.visibility = View.GONE
+            binding.openBrowserButton.visibility = View.GONE
             
-            if (selectedModelName != null) {
-                binding.modelStatusText.text = getString(R.string.model_selected, selectedModelName)
-            } else {
-                binding.modelStatusText.text = getString(R.string.no_model_selected)
-            }
-            binding.selectModelButton.isEnabled = true
-            binding.selectModelButton.text = getString(R.string.select_model)
+            binding.modelSelectorLayout.isEnabled = true
         }
     }
     
@@ -357,41 +354,6 @@ class MainActivity : AppCompatActivity() {
         return "localhost"
     }
     
-    private fun copyUrlToClipboard() {
-        val url = binding.serverUrlText.text.toString()
-        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("Server URL", url)
-        clipboard.setPrimaryClip(clip)
-        Toast.makeText(this, R.string.url_copied, Toast.LENGTH_SHORT).show()
-    }
-    
-    private fun testServer() {
-        val ipAddress = getLocalIpAddress()
-        val port = apiServerService?.getServerPort() ?: ApiServerService.DEFAULT_PORT
-        val testUrl = "http://$ipAddress:$port/health"
-        
-        CoroutineScope(Dispatchers.Main).launch {
-            try {
-                val result = withContext(Dispatchers.IO) {
-                    val url = URL(testUrl)
-                    val connection = url.openConnection() as HttpURLConnection
-                    connection.requestMethod = "GET"
-                    connection.connectTimeout = 5000
-                    connection.readTimeout = 5000
-                    
-                    val responseCode = connection.responseCode
-                    val response = connection.inputStream.bufferedReader().readText()
-                    connection.disconnect()
-                    
-                    "Response Code: $responseCode\n$response"
-                }
-                
-                Toast.makeText(this@MainActivity, "Server test successful!\n$result", Toast.LENGTH_LONG).show()
-            } catch (e: Exception) {
-                Toast.makeText(this@MainActivity, "Server test failed: ${e.message}", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
     
     private fun changeModel() {
         LogManager.i("MainActivity", "User requested to change model while server is running")
@@ -402,21 +364,12 @@ class MainActivity : AppCompatActivity() {
         
         Toast.makeText(this, R.string.server_stopped_to_change_model, Toast.LENGTH_SHORT).show()
         
-        // Wait for server to stop, then open file picker
+        // Wait for server to stop
         binding.root.postDelayed({
-            selectModelFile()
+            updateUI()
         }, 500)
     }
     
-    private fun selectModelFile() {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "*/*"
-            // Filter for .litertlm files
-            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("*/*"))
-        }
-        filePickerLauncher.launch(intent)
-    }
     
     private fun openLogViewer() {
         val intent = Intent(this, LogViewerActivity::class.java)
@@ -428,76 +381,6 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
     
-    private fun handleSelectedFile(uri: Uri) {
-        try {
-            LogManager.i("MainActivity", "User selected a file")
-            
-            // Get file name and size
-            var fileName: String? = null
-            var fileSize: Long = 0
-            contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
-                if (cursor.moveToFirst()) {
-                    fileName = cursor.getString(nameIndex)
-                    fileSize = cursor.getLong(sizeIndex)
-                }
-            }
-            
-            LogManager.i("MainActivity", "Selected file: $fileName (${fileSize / 1024 / 1024} MB)")
-            
-            // Validate file name and extension
-            val validFileName = fileName
-            if (validFileName == null || 
-                (!validFileName.endsWith(".litertlm", ignoreCase = true))) {
-                LogManager.w("MainActivity", "Invalid file type selected: $fileName")
-                Toast.makeText(this, "Please select a LiteRT model file (.litertlm)", Toast.LENGTH_SHORT).show()
-                return
-            }
-            
-            // Check file size (limit to 10GB to avoid OOM)
-            val maxFileSize = 10L * 1024 * 1024 * 1024 // 10GB
-            if (fileSize > maxFileSize) {
-                LogManager.w("MainActivity", "File too large: ${fileSize / 1024 / 1024 / 1024} GB")
-                Toast.makeText(this, "File too large. Maximum size is 10GB", Toast.LENGTH_LONG).show()
-                return
-            }
-            
-            // Take a persistent read permission so the model can be accessed
-            // across app restarts without copying the file.
-            contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            
-            // Register the model by its URI – no file copy needed
-            val model = modelManager.addModelFromUri(uri.toString(), validFileName, fileSize)
-            
-            if (model != null) {
-                // Set as selected model
-                modelManager.setSelectedModelId(model.id)
-                selectedModelPath = model.path
-                selectedModelName = model.name
-                
-                LogManager.i("MainActivity", "Model added and selected: ${model.name}")
-                Toast.makeText(this, "Model selected: $validFileName", Toast.LENGTH_SHORT).show()
-                updateUI()
-                
-                // If server was running before model change, restart it with the new model
-                if (wasServerRunningBeforeModelChange) {
-                    wasServerRunningBeforeModelChange = false
-                    LogManager.i("MainActivity", "Restarting server with new model")
-                    binding.root.postDelayed({
-                        startServer()
-                    }, 500)
-                }
-            } else {
-                LogManager.e("MainActivity", "Failed to add model")
-                Toast.makeText(this, "Failed to add model", Toast.LENGTH_LONG).show()
-            }
-            
-        } catch (e: Exception) {
-            LogManager.e("MainActivity", "Failed to load model file", e)
-            Toast.makeText(this, "Failed to load model: ${e.message}", Toast.LENGTH_LONG).show()
-        }
-    }
     
     override fun onResume() {
         super.onResume()
